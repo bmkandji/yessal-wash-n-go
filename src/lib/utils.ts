@@ -56,8 +56,8 @@ export function getStatusProgress(status: string): number {
   return statusMapping[status] || 0;
 }
 
-// New utility function for webview section handling
+// Updated utility function for webview section handling
 export function constructWebsiteUrl(baseUrl: string = "https://yessal.sn", section?: string | null): string {
   if (!section) return baseUrl;
-  return `${baseUrl}/#${section}`;
+  return `${baseUrl}/${section}`;
 }
