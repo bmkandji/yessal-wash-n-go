@@ -1,17 +1,42 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
+import { useLocation } from "react-router-dom";
 
 const WebView = () => {
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const section = queryParams.get('section');
+
+  // Base URL for the website
+  const baseUrl = "https://yessal.sn";
+  
+  // Construct the full URL with section if provided
+  const websiteUrl = section ? `${baseUrl}/#${section}` : baseUrl;
+
+  useEffect(() => {
+    // If iframe is loaded and we have a section, send a message to scroll to that section
+    if (!loading && section) {
+      const iframe = document.querySelector('iframe');
+      if (iframe) {
+        try {
+          // This assumes the website has code to handle this message
+          iframe.contentWindow?.postMessage({ action: 'scrollToSection', section }, baseUrl);
+        } catch (error) {
+          console.error("Error sending message to iframe:", error);
+        }
+      }
+    }
+  }, [loading, section]);
 
   return (
     <div className="container max-w-md mx-auto pb-20 flex flex-col min-h-screen">
       <div className="p-4">
         <PageHeader
-          title="Site web Yessal"
+          title={section === 'tarifs' ? "Tarifs" : "Site web Yessal"}
           showBackButton
         />
       </div>
@@ -25,7 +50,7 @@ const WebView = () => {
         )}
 
         <iframe
-          src="https://yessal.sn"
+          src={websiteUrl}
           className={`w-full flex-1 ${loading ? "hidden" : "block"}`}
           onLoad={() => setLoading(false)}
           title="Site web Yessal"
@@ -36,7 +61,7 @@ const WebView = () => {
             <Button
               variant="outline"
               className="w-full"
-              onClick={() => window.open("https://yessal.sn", "_blank")}
+              onClick={() => window.open(websiteUrl, "_blank")}
             >
               Ouvrir dans le navigateur
             </Button>

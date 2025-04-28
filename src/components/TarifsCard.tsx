@@ -3,10 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { mockTarifs } from "@/lib/mockData";
 import { formatCurrency } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
 
 const TarifsCard = () => {
+  const navigate = useNavigate();
+
+  const handleTarifsClick = () => {
+    // Redirect to the tarifs page via our WebView with a specific hash for tarifs section
+    navigate("/website?section=tarifs");
+  };
+
   return (
-    <Card>
+    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleTarifsClick}>
       <CardHeader className="pb-2">
         <CardTitle className="text-lg">Tarifs et Promotions</CardTitle>
       </CardHeader>

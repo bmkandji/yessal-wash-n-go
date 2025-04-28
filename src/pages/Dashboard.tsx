@@ -29,6 +29,10 @@ const Dashboard = () => {
     navigate(`/pickup/${id}`);
   };
 
+  const handleTarifsClick = () => {
+    navigate("/website?section=tarifs");
+  };
+
   return (
     <div className="pb-20">
       {/* Header */}
@@ -51,7 +55,10 @@ const Dashboard = () => {
         </div>
         
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2">
-          <Card className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32">
+          <Card 
+            className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32 cursor-pointer"
+            onClick={handleTarifsClick}
+          >
             <CardContent className="p-4 flex flex-col items-center justify-center text-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 7h18" />
@@ -83,7 +90,10 @@ const Dashboard = () => {
             </CardContent>
           </Card>
           
-          <Card className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32">
+          <Card 
+            className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32 cursor-pointer"
+            onClick={() => navigate('/website?section=sites')}
+          >
             <CardContent className="p-4 flex flex-col items-center justify-center text-center">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
