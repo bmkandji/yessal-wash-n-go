@@ -23,10 +23,13 @@ const Profile = () => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    // Empêcher la modification du nom complet
+    if (e.target.name !== "name") {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
   };
 
   const handleSave = () => {
@@ -78,8 +81,12 @@ const Profile = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={true} // Toujours désactivé
+                className="bg-muted"
               />
+              {isEditing && (
+                <p className="text-xs text-muted-foreground">Le nom complet ne peut pas être modifié après la création du compte.</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -162,7 +169,7 @@ const Profile = () => {
                 </Button>
               </Link>
 
-              <Link to="/help">
+              <a href="https://yessal.sn/contact" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full justify-start">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +189,7 @@ const Profile = () => {
                   </svg>
                   Aide et support
                 </Button>
-              </Link>
+              </a>
 
               <a href="https://yessal.sn" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full justify-start">
