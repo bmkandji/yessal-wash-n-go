@@ -56,15 +56,8 @@ export function getStatusProgress(status: string): number {
   return statusMapping[status] || 0;
 }
 
-// Updated utility function for webview section handling
+// New utility function for webview section handling
 export function constructWebsiteUrl(baseUrl: string = "https://yessal.sn", section?: string | null): string {
   if (!section) return baseUrl;
-  
-  // Pour la page contact, on utilise un chemin direct plutôt qu'un ancre
-  if (section === 'contact') {
-    return `${baseUrl}/contact`;
-  }
-  
-  // Pour les autres sections, on utilise le format ancre
   return `${baseUrl}/#${section}`;
 }

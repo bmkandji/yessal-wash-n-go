@@ -16,12 +16,7 @@ const TarifsCard = () => {
   return (
     <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleTarifsClick}>
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center">
-          <span>Tarifs et Promotions</span>
-          <Badge variant="outline" className="ml-2 bg-primary/10 text-primary border-primary/20">
-            Voir site web
-          </Badge>
-        </CardTitle>
+        <CardTitle className="text-lg">Tarifs et Promotions</CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <div className="space-y-3">
