@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import PickupRequestCard from "@/components/PickupRequestCard";
 import { mockPickupRequests } from "@/lib/mockData";
+import { ServiceType } from "@/types";
 
 const PickupRequest = () => {
   const { toast } = useToast();
@@ -25,7 +27,8 @@ const PickupRequest = () => {
     date: "",
     time: "",
     notes: "",
-    type: "standard",
+    type: "standard" as ServiceType,
+    hasIroning: false,
   });
 
   const handleChange = (
@@ -37,10 +40,17 @@ const PickupRequest = () => {
     });
   };
 
-  const handleRadioChange = (value: string) => {
+  const handleRadioChange = (value: ServiceType) => {
     setFormData({
       ...formData,
       type: value,
+    });
+  };
+
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData({
+      ...formData,
+      hasIroning: checked,
     });
   };
 
@@ -48,12 +58,17 @@ const PickupRequest = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate API call
+    // Calculer le prix total
+    const basePrice = formData.type === "standard" ? 1000 : 2000;
+    const ironingPrice = formData.hasIroning ? 500 : 0;
+    const totalPrice = basePrice + ironingPrice;
+
+    // Simuler un appel API
     setTimeout(() => {
       setIsSubmitting(false);
       toast({
         title: "Demande envoyée",
-        description: "Votre demande de collecte a été envoyée avec succès.",
+        description: `Votre demande de collecte a été envoyée avec succès. Prix total: ${totalPrice} CFA`,
       });
       setActiveTab("active");
     }, 1500);
@@ -131,7 +146,7 @@ const PickupRequest = () => {
                     <Label>Type de service</Label>
                     <RadioGroup
                       value={formData.type}
-                      onValueChange={handleRadioChange}
+                      onValueChange={handleRadioChange as (value: string) => void}
                       className="flex flex-col space-y-2"
                     >
                       <div className="flex items-center space-x-2">
@@ -148,14 +163,42 @@ const PickupRequest = () => {
                         </Label>
                         <span className="text-sm font-medium">2000 CFA</span>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="same-day" id="same-day" />
-                        <Label htmlFor="same-day" className="flex-1">
-                          Même jour (6-8h)
-                        </Label>
-                        <span className="text-sm font-medium">3500 CFA</span>
-                      </div>
                     </RadioGroup>
+                  </div>
+                  
+                  <div className="flex items-center space-x-2">
+                    <Checkbox 
+                      id="hasIroning" 
+                      checked={formData.hasIroning} 
+                      onCheckedChange={handleCheckboxChange}
+                    />
+                    <Label htmlFor="hasIroning" className="flex-1">
+                      Option repassage
+                    </Label>
+                    <span className="text-sm font-medium">+500 CFA</span>
+                  </div>
+
+                  <div className="pt-2">
+                    <div className="bg-muted p-3 rounded-md">
+                      <div className="flex justify-between mb-1">
+                        <span>Frais de collecte</span>
+                        <span>{formData.type === "standard" ? "1000" : "2000"} CFA</span>
+                      </div>
+                      {formData.hasIroning && (
+                        <div className="flex justify-between mb-1">
+                          <span>Option repassage</span>
+                          <span>500 CFA</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between font-medium border-t border-border mt-2 pt-2">
+                        <span>Total</span>
+                        <span>
+                          {formData.type === "standard" ? 
+                            (formData.hasIroning ? "1500" : "1000") : 
+                            (formData.hasIroning ? "2500" : "2000")} CFA
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   <Button type="submit" className="w-full" disabled={isSubmitting}>

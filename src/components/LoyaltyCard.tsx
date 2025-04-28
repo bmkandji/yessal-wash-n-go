@@ -6,7 +6,7 @@ import QRCode from "@/components/QRCode";
 import { mockUser } from "@/lib/mockData";
 
 const LoyaltyCard = () => {
-  const loyaltyProgress = (mockUser.loyaltyPoints % 10) * 10; // Progress percentage for next reward
+  const loyaltyProgress = (mockUser.loyaltyPoints % 10) * 10; // Pourcentage de progression pour la prochaine récompense
   const nextRewardAt = 10 - (mockUser.loyaltyPoints % 10);
 
   return (
@@ -49,12 +49,12 @@ const LoyaltyCard = () => {
           </div>
           <Progress value={loyaltyProgress} className="h-2" />
           <p className="text-sm text-muted-foreground">
-            Encore {nextRewardAt} lavage{nextRewardAt > 1 ? "s" : ""} pour obtenir une réduction!
+            Encore {nextRewardAt} lavage{nextRewardAt > 1 ? "s" : ""} pour obtenir un lavage gratuit de 6kg!
           </p>
         </div>
         
         <div className="flex flex-col items-center space-y-4">
-          <QRCode value={`yessal-user-${mockUser.id}`} size={180} />
+          <QRCode value={`loyalty-card`} userId={mockUser.id} size={180} />
           <p className="text-sm text-center text-muted-foreground">
             Présentez ce code QR lors de votre visite
           </p>

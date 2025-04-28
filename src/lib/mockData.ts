@@ -1,5 +1,5 @@
 
-import { Transaction, User, PickupRequest } from '@/types';
+import { Transaction, User, PickupRequest, Tarif, Site } from '@/types';
 
 // Mock user data
 export const mockUser: User = {
@@ -75,7 +75,10 @@ export const mockPickupRequests: PickupRequest[] = [
     pickupTime: "2025-04-22T09:30:00Z",
     estimatedDeliveryTime: "2025-04-23T15:00:00Z",
     notes: "Sonnez à l'appartement 3",
-    trackingCode: "YSL-P12345"
+    trackingCode: "YSL-P12345",
+    hasIroning: true,
+    serviceType: "standard",
+    price: 1000
   },
   {
     id: "p2",
@@ -85,6 +88,66 @@ export const mockPickupRequests: PickupRequest[] = [
     pickupTime: "2025-04-28T10:00:00Z",
     estimatedDeliveryTime: "2025-04-29T16:00:00Z",
     notes: "",
-    trackingCode: "YSL-P67890"
+    trackingCode: "YSL-P67890",
+    hasIroning: false,
+    serviceType: "express",
+    price: 2000
+  }
+];
+
+// Mock tarifs
+export const mockTarifs: Tarif[] = [
+  {
+    id: "t1",
+    name: "Lavage Standard",
+    description: "Lavage jusqu'à 6kg",
+    price: 3000,
+    isPromotion: false
+  },
+  {
+    id: "t2",
+    name: "Lavage Grande Capacité",
+    description: "Lavage jusqu'à 10kg",
+    price: 5000,
+    isPromotion: false
+  },
+  {
+    id: "t3",
+    name: "Option Repassage",
+    description: "Service de repassage",
+    price: 1500,
+    isPromotion: false
+  },
+  {
+    id: "t4",
+    name: "Promotion Étudiants",
+    description: "10% de réduction avec carte étudiant",
+    price: 0,
+    isPromotion: true
+  },
+  {
+    id: "t5",
+    name: "10ème Lavage Gratuit",
+    description: "Lavage de 6kg gratuit après 9 lavages",
+    price: 0,
+    isPromotion: true
+  }
+];
+
+// Mock sites
+export const mockSites: Site[] = [
+  {
+    id: "s1",
+    name: "Yessal Centre-ville",
+    address: "45 Avenue Lamine Gueye, Thiès",
+    phone: "+221 33 456 7890",
+    openingHours: "7h-22h tous les jours"
+  },
+  {
+    id: "s2",
+    name: "Yessal Nguinth",
+    address: "128 Rue Abdou Diouf, Thiès",
+    phone: "+221 33 567 8901",
+    openingHours: "7h-22h tous les jours"
   }
 ];

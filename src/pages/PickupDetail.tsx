@@ -4,11 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import { mockPickupRequests } from "@/lib/mockData";
-import { formatDate, getStatusProgress } from "@/lib/utils";
+import { formatDate, formatCurrency, getStatusProgress } from "@/lib/utils";
 
 const PickupDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,7 +33,7 @@ const PickupDetail = () => {
   
   const statusColors: Record<string, string> = {
     "pending": "bg-yellow-100 text-yellow-800",
-    "accepted": "bg-blue-100 text-blue-800",
+    "confirmed": "bg-blue-100 text-blue-800",
     "on-the-way": "bg-blue-100 text-blue-800",
     "picked-up": "bg-indigo-100 text-indigo-800",
     "processing": "bg-purple-100 text-purple-800",
@@ -45,7 +44,7 @@ const PickupDetail = () => {
   
   const statusLabels: Record<string, string> = {
     "pending": "En attente",
-    "accepted": "Accepté",
+    "confirmed": "Confirmé",
     "on-the-way": "En route",
     "picked-up": "Collecté",
     "processing": "En traitement",
@@ -80,23 +79,35 @@ const PickupDetail = () => {
                 <div className="space-y-2">
                   <Progress value={statusProgress} className="h-2" />
                   
-                  <div className="grid grid-cols-3 text-xs">
+                  <div className="grid grid-cols-5 text-xs">
                     <div className="text-center">
-                      <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 14.29 ? 'bg-primary' : 'bg-muted'}`}></div>
-                      <span className={statusProgress >= 14.29 ? 'font-medium' : 'text-muted-foreground'}>
+                      <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 20 ? 'bg-primary' : 'bg-muted'}`}></div>
+                      <span className={statusProgress >= 20 ? 'font-medium' : 'text-muted-foreground'}>
+                        Confirmé
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 40 ? 'bg-primary' : 'bg-muted'}`}></div>
+                      <span className={statusProgress >= 40 ? 'font-medium' : 'text-muted-foreground'}>
+                        En route
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 60 ? 'bg-primary' : 'bg-muted'}`}></div>
+                      <span className={statusProgress >= 60 ? 'font-medium' : 'text-muted-foreground'}>
                         Collecté
                       </span>
                     </div>
                     <div className="text-center">
-                      <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 57.14 ? 'bg-primary' : 'bg-muted'}`}></div>
-                      <span className={statusProgress >= 57.14 ? 'font-medium' : 'text-muted-foreground'}>
-                        Traité
+                      <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 80 ? 'bg-primary' : 'bg-muted'}`}></div>
+                      <span className={statusProgress >= 80 ? 'font-medium' : 'text-muted-foreground'}>
+                        En retour
                       </span>
                     </div>
                     <div className="text-center">
                       <div className={`w-3 h-3 rounded-full mx-auto mb-1 ${statusProgress >= 100 ? 'bg-primary' : 'bg-muted'}`}></div>
                       <span className={statusProgress >= 100 ? 'font-medium' : 'text-muted-foreground'}>
-                        Livré
+                        Retourné
                       </span>
                     </div>
                   </div>
@@ -129,6 +140,22 @@ const PickupDetail = () => {
                     <span className="text-sm text-muted-foreground">Livraison prévue</span>
                     <p className="font-medium">{formatDate(request.estimatedDeliveryTime)}</p>
                   </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <span className="text-sm text-muted-foreground">Type de service</span>
+                    <p className="font-medium capitalize">{request.serviceType}</p>
+                  </div>
+                  <div className="space-y-1">
+                    <span className="text-sm text-muted-foreground">Repassage</span>
+                    <p className="font-medium">{request.hasIroning ? "Oui" : "Non"}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <span className="text-sm text-muted-foreground">Prix total</span>
+                  <p className="font-medium">{formatCurrency(request.price)} CFA</p>
                 </div>
                 
                 {request.notes && (

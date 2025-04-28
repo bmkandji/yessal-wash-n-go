@@ -34,16 +34,24 @@ export function formatShortDate(dateString: string): string {
 export function getStatusProgress(status: string): number {
   const statuses = [
     "pending",
-    "accepted",
+    "confirmed",
     "on-the-way",
     "picked-up",
-    "processing",
+    "processing", 
     "out-for-delivery",
     "delivered"
   ];
   
-  const index = statuses.indexOf(status);
-  if (index === -1) return 0;
+  // Conversion des statuts de collecte aux nouveaux statuts
+  const statusMapping: Record<string, number> = {
+    "pending": 0,
+    "confirmed": 20,
+    "on-the-way": 40,
+    "picked-up": 60,
+    "processing": 70,
+    "out-for-delivery": 80,
+    "delivered": 100
+  };
   
-  return ((index + 1) / statuses.length) * 100;
+  return statusMapping[status] || 0;
 }

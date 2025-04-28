@@ -59,14 +59,37 @@ export interface PickupRequest {
   estimatedDeliveryTime: string;
   notes: string;
   trackingCode: string;
+  hasIroning: boolean;
+  serviceType: ServiceType;
+  price: number;
 }
+
+export type ServiceType = "standard" | "express";
 
 export type PickupStatus = 
   | "pending" 
-  | "accepted" 
+  | "confirmed"
   | "on-the-way" 
   | "picked-up" 
-  | "processing" 
+  | "processing"
   | "out-for-delivery" 
   | "delivered" 
   | "cancelled";
+
+// Tarif types
+export interface Tarif {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  isPromotion: boolean;
+}
+
+// Site types
+export interface Site {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  openingHours: string;
+}

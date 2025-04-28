@@ -3,7 +3,7 @@ import { PickupRequest } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 
 interface PickupRequestCardProps {
   request: PickupRequest;
@@ -13,7 +13,7 @@ interface PickupRequestCardProps {
 const PickupRequestCard = ({ request, onSelect }: PickupRequestCardProps) => {
   const statusColors: Record<string, string> = {
     "pending": "bg-yellow-100 text-yellow-800",
-    "accepted": "bg-blue-100 text-blue-800",
+    "confirmed": "bg-blue-100 text-blue-800",
     "on-the-way": "bg-blue-100 text-blue-800",
     "picked-up": "bg-indigo-100 text-indigo-800",
     "processing": "bg-purple-100 text-purple-800",
@@ -24,7 +24,7 @@ const PickupRequestCard = ({ request, onSelect }: PickupRequestCardProps) => {
 
   const statusLabels: Record<string, string> = {
     "pending": "En attente",
-    "accepted": "Accepté",
+    "confirmed": "Confirmé",
     "on-the-way": "En route",
     "picked-up": "Collecté",
     "processing": "En traitement",
@@ -66,6 +66,22 @@ const PickupRequestCard = ({ request, onSelect }: PickupRequestCardProps) => {
             <p className="text-muted-foreground mb-1">Livraison prévue</p>
             <p className="font-medium">{formatDate(request.estimatedDeliveryTime)}</p>
           </div>
+        </div>
+        
+        <div className="flex justify-between">
+          <div>
+            <p className="text-muted-foreground mb-1">Type de service</p>
+            <p className="font-medium capitalize">{request.serviceType}</p>
+          </div>
+          <div>
+            <p className="text-muted-foreground mb-1">Repassage</p>
+            <p className="font-medium">{request.hasIroning ? "Oui" : "Non"}</p>
+          </div>
+        </div>
+        
+        <div>
+          <p className="text-muted-foreground mb-1">Prix</p>
+          <p className="font-medium">{formatCurrency(request.price)} CFA</p>
         </div>
         
         {request.notes && (
