@@ -32,6 +32,11 @@ const History = () => {
     navigate(`/transaction/${id}`);
   };
 
+  // Get only in-progress transactions
+  const inProgressTransactions = mockTransactions.filter(
+    (transaction) => transaction.status === "in-progress"
+  );
+
   return (
     <div className="container max-w-md mx-auto pb-20">
       <div className="p-4">
@@ -51,7 +56,7 @@ const History = () => {
           <TabsList className="grid grid-cols-3 mb-4">
             <TabsTrigger value="all">Tout</TabsTrigger>
             <TabsTrigger value="completed">Terminés</TabsTrigger>
-            <TabsTrigger value="pending">En cours</TabsTrigger>
+            <TabsTrigger value="in-progress">En cours</TabsTrigger>
           </TabsList>
 
           <TabsContent value={activeTab} className="mt-0">
@@ -86,9 +91,15 @@ const History = () => {
                     <path d="m11 9 5 2-5 2Z" />
                   </svg>
                 </div>
-                <h3 className="font-medium text-lg">Aucun résultat</h3>
+                {activeTab === "in-progress" ? (
+                  <h3 className="font-medium text-lg">Vous n'avez pas de lavage en cours</h3>
+                ) : (
+                  <h3 className="font-medium text-lg">Aucun résultat</h3>
+                )}
                 <p className="text-muted-foreground">
-                  Aucune transaction ne correspond à votre recherche
+                  {activeTab === "in-progress"
+                    ? "Toutes vos commandes en cours apparaîtront ici"
+                    : "Aucune transaction ne correspond à votre recherche"}
                 </p>
               </div>
             )}

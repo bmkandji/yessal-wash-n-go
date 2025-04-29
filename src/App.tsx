@@ -13,6 +13,8 @@ import Profile from "./pages/Profile";
 import PickupRequest from "./pages/PickupRequest";
 import PickupDetail from "./pages/PickupDetail";
 import WebView from "./pages/WebView";
+import Settings from "./pages/Settings";
+import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +35,8 @@ const App = () => (
           <Route path="/pickup/new" element={<PickupRequest />} />
           <Route path="/pickup/:id" element={<PickupDetail />} />
           <Route path="/website" element={<WebView />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/help" element={<Help />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

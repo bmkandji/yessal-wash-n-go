@@ -78,7 +78,7 @@ const Profile = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                disabled={!isEditing}
+                disabled={true} // Always disabled - can't change name after account creation
               />
             </div>
             <div className="space-y-2">
