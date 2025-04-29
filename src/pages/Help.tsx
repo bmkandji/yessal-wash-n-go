@@ -1,13 +1,48 @@
 
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
+import { mockUser } from "@/lib/mockData";
 
 const Help = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    subject: "",
+    message: ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubmitting(false);
+      toast({
+        title: "Message envoyé",
+        description: "Vous avez reçu une copie de votre message par e-mail.",
+      });
+      setFormData({ subject: "", message: "" });
+    }, 1000);
+  };
 
   return (
     <div className="container max-w-md mx-auto pb-20">
@@ -20,7 +55,7 @@ const Help = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground">
-              Pour toute question ou problème, vous pouvez nous contacter par téléphone ou par email:
+              Pour toute question ou problème, vous pouvez nous contacter par téléphone ou nous envoyer un message:
             </p>
             
             <div className="space-y-4 pt-2">
@@ -43,35 +78,46 @@ const Help = () => {
                   +221 77 148 96 22
                 </Button>
               </a>
-              
-              <a href="mailto:contact@yessal.sn">
-                <Button variant="outline" className="w-full justify-start">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2"
-                  >
-                    <rect width="20" height="16" x="2" y="4" rx="2" />
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                  </svg>
-                  contact@yessal.sn
-                </Button>
-              </a>
 
               <Separator className="my-2" />
               
-              <a href="https://yessal.sn/contact" target="_blank" rel="noopener noreferrer">
-                <Button variant="default" className="w-full">
-                  Formulaire de contact
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Objet</Label>
+                  <Input 
+                    id="subject" 
+                    name="subject" 
+                    value={formData.subject} 
+                    onChange={handleChange} 
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="message">Message</Label>
+                  <Textarea 
+                    id="message" 
+                    name="message" 
+                    value={formData.message} 
+                    onChange={handleChange} 
+                    rows={5} 
+                    placeholder="Décrivez votre problème ou posez votre question..." 
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Envoi en cours..." : "Envoyer message"}
                 </Button>
-              </a>
+                
+                <p className="text-xs text-muted-foreground text-center">
+                  Votre message sera envoyé à contact@yessal.sn et une copie vous sera envoyée à {mockUser.email}
+                </p>
+              </form>
             </div>
           </CardContent>
         </Card>
