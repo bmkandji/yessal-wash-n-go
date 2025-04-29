@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import { mockTransactions } from "@/lib/mockData";
@@ -13,7 +12,6 @@ import { formatCurrency, formatDate } from "@/lib/utils";
 const TransactionDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   const transaction = mockTransactions.find(t => t.id === id);
   
@@ -45,53 +43,6 @@ const TransactionDetail = () => {
     "in-progress": "En cours",
     "completed": "Terminé",
     "cancelled": "Annulé",
-  };
-
-  const handleDownloadInvoice = () => {
-    // This would be replaced with actual PDF generation
-    // For now, we'll just show a toast to indicate it's working
-    toast({
-      title: "Téléchargement de la facture",
-      description: "Votre facture PDF est en cours de téléchargement."
-    });
-
-    // Simulate file download delay
-    setTimeout(() => {
-      // Create a simple text representation of the invoice data
-      const invoiceContent = `
-        YESSAL WASH-N-GO
-        FACTURE #${transaction.id.slice(-5)}
-        Date: ${formatDate(transaction.date)}
-        
-        Site: ${transaction.location}
-        Poids total: ${transaction.totalWeight} kg
-        Machine: ${transaction.machines[0]?.name || "N/A"}
-        ${transaction.hasIroning ? "Repassage: Oui" : ""}
-        ${transaction.hasDelivery ? "Livraison: Oui" : ""}
-        
-        TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
-      `;
-      
-      // Create a blob for the text content
-      const blob = new Blob([invoiceContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      
-      // Create a link element and trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `facture-${transaction.id.slice(-5)}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      toast({
-        title: "Facture téléchargée",
-        description: "Votre facture a été téléchargée avec succès."
-      });
-    }, 1500);
   };
 
   return (
@@ -182,7 +133,7 @@ const TransactionDetail = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Vous pouvez télécharger une copie de votre reçu pour vos dossiers.
               </p>
-              <Button variant="outline" className="w-full" onClick={handleDownloadInvoice}>
+              <Button variant="outline" className="w-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="7 10 12 15 17 10" />
@@ -199,11 +150,7 @@ const TransactionDetail = () => {
               <p className="text-sm text-muted-foreground mb-4">
                 Si vous avez des questions concernant cette transaction, contactez-nous.
               </p>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => navigate('/help')}
-              >
+              <Button variant="outline" className="w-full">
                 Contacter le support
               </Button>
             </CardContent>
