@@ -54,70 +54,61 @@ const TransactionDetail = () => {
       description: "Votre facture PDF est en cours de téléchargement."
     });
 
-    // Create invoice content
-    const invoiceContent = `
-      YESSAL WASH-N-GO
-      FACTURE #${transaction.id.slice(-5)}
-      Date: ${formatDate(transaction.date)}
-      
-      Site: ${transaction.location}
-      Poids total: ${transaction.totalWeight} kg
-      Machine: ${transaction.machines[0]?.name || "N/A"}
-      ${transaction.hasIroning ? "Repassage: Oui" : ""}
-      ${transaction.hasDelivery ? "Livraison: Oui" : ""}
-      
-      TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
+    // Create invoice content for PDF
+    const invoiceHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Facture Yessal #${transaction.id.slice(-5)}</title>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: sans-serif; padding: 20px; color: #333; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .header h1 { color: #00bf63; margin-bottom: 5px; }
+          .details { margin: 20px 0; }
+          .details p { margin: 5px 0; }
+          .total { margin-top: 30px; font-weight: bold; font-size: 18px; }
+          .footer { margin-top: 50px; font-size: 12px; text-align: center; color: #777; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>YESSAL WASH-N-GO</h1>
+          <h2>FACTURE #${transaction.id.slice(-5)}</h2>
+          <p>Date: ${formatDate(transaction.date)}</p>
+        </div>
+        <div class="details">
+          <p><strong>Site:</strong> ${transaction.location}</p>
+          <p><strong>Poids total:</strong> ${transaction.totalWeight} kg</p>
+          <p><strong>Machine:</strong> ${transaction.machines[0]?.name || "N/A"}</p>
+          ${transaction.hasIroning ? "<p><strong>Repassage:</strong> Oui</p>" : ""}
+          ${transaction.hasDelivery ? "<p><strong>Livraison:</strong> Oui</p>" : ""}
+        </div>
+        <div class="total">
+          TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
+        </div>
+        <div class="footer">
+          Merci pour votre confiance! Pour toute question, contactez-nous à contact@yessal.sn
+        </div>
+      </body>
+      </html>
     `;
     
-    // Generate PDF using a simple approach
-    const element = document.createElement('div');
-    element.innerHTML = `
-      <style>
-        body {font-family: sans-serif; padding: 20px;}
-        h1 {color: #00bf63;}
-        .header {text-align: center; margin-bottom: 30px;}
-        .details {margin-top: 20px;}
-        .total {margin-top: 30px; font-weight: bold; font-size: 18px;}
-      </style>
-      <div class="header">
-        <h1>YESSAL WASH-N-GO</h1>
-        <h2>FACTURE #${transaction.id.slice(-5)}</h2>
-        <p>Date: ${formatDate(transaction.date)}</p>
-      </div>
-      <div class="details">
-        <p>Site: ${transaction.location}</p>
-        <p>Poids total: ${transaction.totalWeight} kg</p>
-        <p>Machine: ${transaction.machines[0]?.name || "N/A"}</p>
-        ${transaction.hasIroning ? "<p>Repassage: Oui</p>" : ""}
-        ${transaction.hasDelivery ? "<p>Livraison: Oui</p>" : ""}
-      </div>
-      <div class="total">
-        TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
-      </div>
-    `;
+    // Create a Blob from the HTML content
+    const blob = new Blob([invoiceHTML], { type: 'text/html' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `facture-yessal-${transaction.id.slice(-5)}.html`;
     
-    setTimeout(() => {
-      const printWindow = window.open('', '', 'height=600,width=800');
-      if (printWindow) {
-        printWindow.document.write('<html><head><title>Facture Yessal</title>');
-        printWindow.document.write('</head><body>');
-        printWindow.document.write(element.innerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.focus();
-        
-        // Print and save as PDF
-        setTimeout(() => {
-          printWindow.print();
-          printWindow.close();
-        }, 500);
-      }
-      
-      toast({
-        title: "Facture prête",
-        description: "Votre facture a été générée. Veuillez l'enregistrer au format PDF."
-      });
-    }, 1000);
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Facture téléchargée",
+      description: "Votre facture a été téléchargée avec succès."
+    });
   };
 
   return (
@@ -150,7 +141,7 @@ const TransactionDetail = () => {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Site</span>
-                  <span className="font-medium">{transaction.location}</span>
+                  <span className="font-medium truncate max-w-[60%] text-right">{transaction.location}</span>
                 </div>
                 
                 <div className="flex justify-between items-center">
@@ -160,7 +151,7 @@ const TransactionDetail = () => {
                 
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">Machine</span>
-                  <span className="font-medium">
+                  <span className="font-medium truncate max-w-[60%] text-right">
                     {transaction.machines[0]?.name || "N/A"}
                   </span>
                 </div>
@@ -182,7 +173,7 @@ const TransactionDetail = () => {
                 {transaction.discounts.length > 0 && (
                   <div className="flex justify-between items-center">
                     <span className="text-muted-foreground">Réduction</span>
-                    <span className="font-medium">
+                    <span className="font-medium truncate max-w-[60%] text-right">
                       {transaction.discounts
                         .map(d => `${d.name} (${d.percentage}%)`)
                         .join(", ")}
