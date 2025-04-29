@@ -49,49 +49,75 @@ const TransactionDetail = () => {
 
   const handleDownloadInvoice = () => {
     // This would be replaced with actual PDF generation
-    // For now, we'll just show a toast to indicate it's working
     toast({
       title: "Téléchargement de la facture",
       description: "Votre facture PDF est en cours de téléchargement."
     });
 
-    // Simulate file download delay
-    setTimeout(() => {
-      // Create a simple text representation of the invoice data
-      const invoiceContent = `
-        YESSAL WASH-N-GO
-        FACTURE #${transaction.id.slice(-5)}
-        Date: ${formatDate(transaction.date)}
-        
-        Site: ${transaction.location}
-        Poids total: ${transaction.totalWeight} kg
-        Machine: ${transaction.machines[0]?.name || "N/A"}
-        ${transaction.hasIroning ? "Repassage: Oui" : ""}
-        ${transaction.hasDelivery ? "Livraison: Oui" : ""}
-        
+    // Create invoice content
+    const invoiceContent = `
+      YESSAL WASH-N-GO
+      FACTURE #${transaction.id.slice(-5)}
+      Date: ${formatDate(transaction.date)}
+      
+      Site: ${transaction.location}
+      Poids total: ${transaction.totalWeight} kg
+      Machine: ${transaction.machines[0]?.name || "N/A"}
+      ${transaction.hasIroning ? "Repassage: Oui" : ""}
+      ${transaction.hasDelivery ? "Livraison: Oui" : ""}
+      
+      TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
+    `;
+    
+    // Generate PDF using a simple approach
+    const element = document.createElement('div');
+    element.innerHTML = `
+      <style>
+        body {font-family: sans-serif; padding: 20px;}
+        h1 {color: #00bf63;}
+        .header {text-align: center; margin-bottom: 30px;}
+        .details {margin-top: 20px;}
+        .total {margin-top: 30px; font-weight: bold; font-size: 18px;}
+      </style>
+      <div class="header">
+        <h1>YESSAL WASH-N-GO</h1>
+        <h2>FACTURE #${transaction.id.slice(-5)}</h2>
+        <p>Date: ${formatDate(transaction.date)}</p>
+      </div>
+      <div class="details">
+        <p>Site: ${transaction.location}</p>
+        <p>Poids total: ${transaction.totalWeight} kg</p>
+        <p>Machine: ${transaction.machines[0]?.name || "N/A"}</p>
+        ${transaction.hasIroning ? "<p>Repassage: Oui</p>" : ""}
+        ${transaction.hasDelivery ? "<p>Livraison: Oui</p>" : ""}
+      </div>
+      <div class="total">
         TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
-      `;
-      
-      // Create a blob for the text content
-      const blob = new Blob([invoiceContent], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      
-      // Create a link element and trigger download
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `facture-${transaction.id.slice(-5)}.txt`;
-      document.body.appendChild(a);
-      a.click();
-      
-      // Clean up
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      </div>
+    `;
+    
+    setTimeout(() => {
+      const printWindow = window.open('', '', 'height=600,width=800');
+      if (printWindow) {
+        printWindow.document.write('<html><head><title>Facture Yessal</title>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(element.innerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        
+        // Print and save as PDF
+        setTimeout(() => {
+          printWindow.print();
+          printWindow.close();
+        }, 500);
+      }
       
       toast({
-        title: "Facture téléchargée",
-        description: "Votre facture a été téléchargée avec succès."
+        title: "Facture prête",
+        description: "Votre facture a été générée. Veuillez l'enregistrer au format PDF."
       });
-    }, 1500);
+    }, 1000);
   };
 
   return (

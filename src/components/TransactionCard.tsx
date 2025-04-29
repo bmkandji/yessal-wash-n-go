@@ -31,15 +31,15 @@ const TransactionCard = ({ transaction, onSelect }: TransactionCardProps) => {
     >
       <CardHeader className="p-4 pb-2">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg font-medium">
+          <div className="truncate pr-2">
+            <CardTitle className="text-lg font-medium truncate">
               {formatCurrency(transaction.totalPrice)} CFA
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="truncate">
               {formatDate(transaction.date)}
             </CardDescription>
           </div>
-          <Badge className={statusColors[transaction.status]}>
+          <Badge className={`${statusColors[transaction.status]} whitespace-nowrap`}>
             {transaction.status === "completed" ? "Terminé" : 
              transaction.status === "in-progress" ? "En cours" :
              transaction.status === "pending" ? "En attente" : "Annulé"}
@@ -50,20 +50,20 @@ const TransactionCard = ({ transaction, onSelect }: TransactionCardProps) => {
         <div className="text-sm space-y-2">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Poids total</span>
-            <span>{transaction.totalWeight} kg</span>
+            <span className="truncate ml-2">{transaction.totalWeight} kg</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Machine</span>
-            <span>{transaction.machines[0]?.name || "N/A"}</span>
+            <span className="truncate ml-2">{transaction.machines[0]?.name || "N/A"}</span>
           </div>
           
           <Separator className="my-2" />
           
           <div className="flex justify-between">
             <span className="text-muted-foreground">Site</span>
-            <span>{transaction.location}</span>
+            <span className="truncate ml-2">{transaction.location}</span>
           </div>
-          <div className="flex gap-2 mt-2">
+          <div className="flex flex-wrap gap-1 mt-2">
             {transaction.hasIroning && (
               <Badge variant="outline" className="text-xs">Repassage</Badge>
             )}
