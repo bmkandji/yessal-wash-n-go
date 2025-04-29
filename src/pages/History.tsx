@@ -17,11 +17,11 @@ const History = () => {
 
   // Filter transactions based on their status
   const ongoingTransactions = mockTransactions.filter(
-    (t) => t.status === "pending" || t.status === "in-progress"
+    (t) => t.status !== "delivered" && t.status !== "cancelled"
   );
   
   const completedTransactions = mockTransactions.filter(
-    (t) => t.status === "completed"
+    (t) => t.status === "delivered"
   );
 
   return (

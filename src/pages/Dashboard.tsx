@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import NavBar from "@/components/NavBar";
 import LoyaltyCard from "@/components/LoyaltyCard";
 import TransactionCard from "@/components/TransactionCard";
-import TarifsCard from "@/components/TarifsCard";
-import SitesCard from "@/components/SitesCard";
 import { mockUser, mockTransactions } from "@/lib/mockData";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -80,29 +79,6 @@ const Dashboard = () => {
             </div>
           </TabsContent>
         </Tabs>
-        
-        {/* Additional sections */}
-        <div className="mt-6 space-y-4">
-          <TarifsCard />
-          
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div onClick={() => navigate('/pickup')} className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Collecte</h3>
-                  <p className="text-sm text-muted-foreground">Demande de collecte à domicile</p>
-                </div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="m12 8 4 4-4 4"/>
-                  <path d="m8 12h8"/>
-                </svg>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <SitesCard />
-        </div>
       </div>
       
       <NavBar />

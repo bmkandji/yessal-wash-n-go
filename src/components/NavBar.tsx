@@ -25,24 +25,22 @@ const NavBar = () => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-background border-t flex justify-around items-center py-2 z-50">
-      <div className="max-w-md w-full mx-auto flex justify-around">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            to={item.href}
-            className={cn(
-              "flex flex-col items-center justify-center p-2 rounded-lg",
-              location.pathname === item.href
-                ? "text-primary"
-                : "text-muted-foreground hover:text-primary"
-            )}
-          >
-            {item.icon}
-            <span className="text-xs mt-1">{item.label}</span>
-          </Link>
-        ))}
-      </div>
+    <div className="fixed bottom-0 left-0 right-0 bg-background border-t flex justify-around items-center py-2 z-50 max-w-md mx-auto">
+      {navItems.map((item) => (
+        <Link
+          key={item.href}
+          to={item.href}
+          className={cn(
+            "flex flex-col items-center justify-center p-2 rounded-lg w-full",
+            location.pathname === item.href
+              ? "text-primary"
+              : "text-muted-foreground hover:text-primary"
+          )}
+        >
+          {item.icon}
+          <span className="text-xs mt-1 whitespace-nowrap">{item.label}</span>
+        </Link>
+      ))}
     </div>
   );
 };
