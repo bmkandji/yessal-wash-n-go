@@ -8,25 +8,16 @@ import { Badge } from "@/components/ui/badge";
 import NavBar from "@/components/NavBar";
 import LoyaltyCard from "@/components/LoyaltyCard";
 import TransactionCard from "@/components/TransactionCard";
-import PickupRequestCard from "@/components/PickupRequestCard";
-import TarifsCard from "@/components/TarifsCard";
-import SitesCard from "@/components/SitesCard";
-import { mockUser, mockTransactions, mockPickupRequests } from "@/lib/mockData";
+import { mockUser, mockTransactions } from "@/lib/mockData";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("loyalty");
-  
-  const handleNewPickupRequest = () => {
-    navigate("/pickup/new");
-  };
+  const isMobile = useIsMobile();
   
   const handleViewTransaction = (id: string) => {
     navigate(`/transaction/${id}`);
-  };
-  
-  const handleViewPickupRequest = (id: string) => {
-    navigate(`/pickup/${id}`);
   };
 
   const handleTarifsClick = () => {
@@ -34,13 +25,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="pb-20">
+    <div className="pb-20 max-w-md mx-auto w-full">
       {/* Header */}
-      <div className="bg-gradient-to-r from-yessal-green to-yessal-blue p-6 pt-12 text-white">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-gradient-to-r from-yessal-green to-yessal-blue p-4 pt-8 text-white">
+        <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold">Bonjour, {mockUser.name.split(' ')[0]}</h1>
-            <p className="text-white/80">Bienvenue chez Yessal Wash-N-Go</p>
+            <h1 className="text-xl font-bold">Bonjour, {mockUser.name.split(' ')[0]}</h1>
+            <p className="text-white/80 text-sm">Bienvenue chez Yessal Wash-N-Go</p>
           </div>
           <Button 
             variant="outline" 
@@ -53,60 +44,10 @@ const Dashboard = () => {
             </svg>
           </Button>
         </div>
-        
-        <div className="flex gap-2 overflow-x-auto pb-2 -mx-2 px-2">
-          <Card 
-            className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32 cursor-pointer"
-            onClick={handleTarifsClick}
-          >
-            <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 7h18" />
-                <rect width="18" height="14" x="3" y="5" rx="2" />
-                <path d="M7 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
-                <path d="M15 11a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" />
-                <path d="m11 9 5 2-5 2Z" />
-              </svg>
-              <p className="text-sm mt-1">Tarifs</p>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32 cursor-pointer"
-            onClick={handleNewPickupRequest}
-          >
-            <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v4" />
-                <path d="m4.93 10.93 1.41 1.41" />
-                <path d="M2 18h2" />
-                <path d="M20 18h2" />
-                <path d="m19.07 10.93-1.41 1.41" />
-                <path d="M22 22H2" />
-                <path d="m8 22 4-10 4 10" />
-                <path d="M12 6a4 4 0 0 0-4 4v10h8V10a4 4 0 0 0-4-4Z" />
-              </svg>
-              <p className="text-sm mt-1">Collecte</p>
-            </CardContent>
-          </Card>
-          
-          <Card 
-            className="flex-shrink-0 bg-white/20 border-white/20 text-white w-32 cursor-pointer"
-            onClick={() => navigate('/website?section=sites')}
-          >
-            <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <p className="text-sm mt-1">Nos sites</p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
       
       {/* Content */}
-      <div className="px-4 py-6">
+      <div className="px-4 py-4">
         <Tabs 
           value={activeTab} 
           onValueChange={setActiveTab}
@@ -138,7 +79,13 @@ const Dashboard = () => {
                         <p className="text-sm text-muted-foreground">Après 10 lavages</p>
                       </div>
                     </div>
-                    <Badge variant="outline">{mockUser.loyaltyPoints % 10}/10</Badge>
+                    <div>
+                      {mockUser.loyaltyPoints % 10 === 0 && mockUser.loyaltyPoints > 0 ? (
+                        <Badge className="bg-primary">Un lavage gratuit vous attend</Badge>
+                      ) : (
+                        <Badge variant="outline">Récompense en cours</Badge>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
