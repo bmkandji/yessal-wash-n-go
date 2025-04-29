@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import NavBar from "@/components/NavBar";
-import Logo from "@/components/Logo";
 import LoyaltyCard from "@/components/LoyaltyCard";
 import TransactionCard from "@/components/TransactionCard";
 import PickupRequestCard from "@/components/PickupRequestCard";
@@ -108,18 +107,16 @@ const Dashboard = () => {
       
       {/* Content */}
       <div className="px-4 py-6">
-        <div className="flex justify-center mb-6">
-          <Logo width={100} height={100} />
-        </div>
-        
         <Tabs 
           value={activeTab} 
           onValueChange={setActiveTab}
           className="w-full"
         >
-          <TabsList className="grid grid-cols-2 mb-4">
+          <TabsList className="grid grid-cols-4 mb-4">
             <TabsTrigger value="loyalty">Fidélité</TabsTrigger>
             <TabsTrigger value="activity">Activité</TabsTrigger>
+            <TabsTrigger value="tarifs">Tarifs</TabsTrigger>
+            <TabsTrigger value="sites">Sites</TabsTrigger>
           </TabsList>
           
           <TabsContent value="loyalty" className="mt-0">
@@ -170,12 +167,15 @@ const Dashboard = () => {
               </Button>
             </div>
           </TabsContent>
+          
+          <TabsContent value="tarifs" className="mt-0">
+            <TarifsCard />
+          </TabsContent>
+
+          <TabsContent value="sites" className="mt-0">
+            <SitesCard />
+          </TabsContent>
         </Tabs>
-        
-        <div className="mt-8 space-y-6">
-          <TarifsCard />
-          <SitesCard />
-        </div>
       </div>
       
       <NavBar />

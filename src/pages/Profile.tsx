@@ -10,7 +10,6 @@ import { useToast } from "@/components/ui/use-toast";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import { mockUser } from "@/lib/mockData";
-import { constructWebsiteUrl } from "@/lib/utils";
 
 const Profile = () => {
   const { toast } = useToast();
@@ -47,10 +46,6 @@ const Profile = () => {
     navigate("/");
   };
 
-  const handleHelpClick = () => {
-    window.location.href = constructWebsiteUrl(undefined, "contact");
-  };
-
   return (
     <div className="container max-w-md mx-auto pb-20">
       <div className="p-4">
@@ -83,7 +78,7 @@ const Profile = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                disabled={true} // Always disabled, can't be modified
+                disabled={!isEditing}
               />
             </div>
             <div className="space-y-2">
@@ -167,25 +162,27 @@ const Profile = () => {
                 </Button>
               </Link>
 
-              <Button variant="outline" className="w-full justify-start" onClick={handleHelpClick}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="mr-2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                  <line x1="12" x2="12.01" y1="17" y2="17" />
-                </svg>
-                Aide et support
-              </Button>
+              <Link to="/help">
+                <Button variant="outline" className="w-full justify-start">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="mr-2"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                    <line x1="12" x2="12.01" y1="17" y2="17" />
+                  </svg>
+                  Aide et support
+                </Button>
+              </Link>
 
               <a href="https://yessal.sn" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="w-full justify-start">
