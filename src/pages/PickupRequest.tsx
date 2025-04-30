@@ -31,6 +31,11 @@ const PickupRequest = () => {
     hasIroning: false,
   });
 
+  // Filter to only show active pickup requests (not delivered or cancelled)
+  const activePickupRequests = mockPickupRequests.filter(request => 
+    !["delivered", "cancelled"].includes(request.status)
+  );
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -236,9 +241,9 @@ const PickupRequest = () => {
           </TabsContent>
 
           <TabsContent value="active" className="mt-0">
-            {mockPickupRequests.length > 0 ? (
+            {activePickupRequests.length > 0 ? (
               <div className="space-y-3">
-                {mockPickupRequests.map((request) => (
+                {activePickupRequests.map((request) => (
                   <PickupRequestCard
                     key={request.id}
                     request={request}

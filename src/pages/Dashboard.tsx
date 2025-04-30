@@ -29,32 +29,6 @@ const Dashboard = () => {
     navigate(`/transaction/${id}`);
   };
   
-  // Function to download QR code as image
-  const handleDownloadQR = () => {
-    const qrElement = document.querySelector('#loyalty-qrcode svg');
-    if (!qrElement) return;
-    
-    const svgData = new XMLSerializer().serializeToString(qrElement);
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const img = new Image();
-    
-    img.onload = () => {
-      canvas.width = img.width;
-      canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
-      const pngFile = canvas.toDataURL("image/png");
-      
-      // Download the file
-      const downloadLink = document.createElement("a");
-      downloadLink.download = `yessal-qrcode-${mockUser.id}.png`;
-      downloadLink.href = pngFile;
-      downloadLink.click();
-    };
-    
-    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
-  };
-  
   // Filter only the two closest sites
   const closestSites = mockSites.slice(0, 2);
 
@@ -85,27 +59,7 @@ const Dashboard = () => {
           <TabsContent value="loyalty" className="mt-0">
             <div id="loyalty-qrcode" className="mb-4">
               <LoyaltyCard />
-              <div className="flex justify-center mt-4">
-                <Button variant="outline" size="sm" onClick={handleDownloadQR}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="mr-2"
-                  >
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" x2="12" y1="15" y2="3" />
-                  </svg>
-                  Télécharger le QR code
-                </Button>
-              </div>
+              {/* Removed the QR code download button here */}
             </div>
           </TabsContent>
           

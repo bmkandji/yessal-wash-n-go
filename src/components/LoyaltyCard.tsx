@@ -11,13 +11,90 @@ const LoyaltyCard = () => {
   const nextRewardAt = 10 - (mockUser.loyaltyPoints % 10);
   const hasRewardAvailable = mockUser.loyaltyPoints % 10 === 0 && mockUser.loyaltyPoints > 0;
 
+  const handleDownloadCard = () => {
+    const qrElement = document.querySelector('#loyalty-qrcode svg');
+    if (!qrElement) return;
+    
+    // Create a canvas element to hold our card
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    
+    // Set card size (width, height)
+    canvas.width = 600;
+    canvas.height = 320;
+    
+    // Draw card background with gradient
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+    gradient.addColorStop(0, "#00bf63");  // yessal-green
+    gradient.addColorStop(1, "#0891b2");  // yessal-blue
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Add translucent overlay
+    ctx.fillStyle = "rgba(255, 255, 255, 0.1)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Add card title
+    ctx.font = "bold 28px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText("Carte de Fidélité", 40, 50);
+    
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+    ctx.fillText("Yessal", 40, 80);
+    
+    // Add user info
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.fillText("Client", 40, 140);
+    ctx.font = "bold 20px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText(mockUser.name, 40, 170);
+    
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.fillText("ID Client", 40, 220);
+    ctx.font = "bold 20px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText(mockUser.id, 40, 250);
+    
+    // Add points info
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.fillText("Points", 300, 140);
+    ctx.font = "bold 28px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText(mockUser.loyaltyPoints.toString(), 300, 170);
+    
+    // Convert SVG QR code to an image
+    const svgData = new XMLSerializer().serializeToString(qrElement);
+    const img = new Image();
+    
+    img.onload = () => {
+      // Draw the QR code onto our card
+      ctx.drawImage(img, 380, 120, 180, 180);
+      
+      // Convert the canvas to a downloadable PNG
+      const pngFile = canvas.toDataURL("image/png");
+      
+      // Download the file
+      const downloadLink = document.createElement("a");
+      downloadLink.download = `yessal-carte-fidelite-${mockUser.id}.png`;
+      downloadLink.href = pngFile;
+      downloadLink.click();
+    };
+    
+    img.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+  };
+
   return (
     <Card className="w-full overflow-hidden">
       <div className="yessal-gradient text-white p-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm opacity-50"></div>
         <div className="relative z-10">
           <h3 className="font-bold text-xl mb-1">Carte de Fidélité</h3>
-          <p className="text-sm opacity-90 mb-4">Yessal Wash-N-Go</p>
+          <p className="text-sm opacity-90 mb-4">Yessal</p>
           
           <div className="flex justify-between items-center">
             <div>
@@ -73,7 +150,7 @@ const LoyaltyCard = () => {
           <p className="text-sm text-center text-muted-foreground">
             Présentez ce code QR lors de votre visite
           </p>
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" onClick={handleDownloadCard}>
             Télécharger
           </Button>
         </div>
