@@ -31,7 +31,7 @@ const TransactionCard = ({ transaction, onSelect }: TransactionCardProps) => {
     >
       <CardHeader className="p-4 pb-2">
         <div className="flex justify-between items-start">
-          <div className="truncate pr-2">
+          <div className="truncate pr-2 max-w-[65%]">
             <CardTitle className="text-lg font-medium truncate">
               {formatCurrency(transaction.totalPrice)} CFA
             </CardTitle>
@@ -50,18 +50,18 @@ const TransactionCard = ({ transaction, onSelect }: TransactionCardProps) => {
         <div className="text-sm space-y-2">
           <div className="flex justify-between">
             <span className="text-muted-foreground">Poids total</span>
-            <span className="truncate ml-2">{transaction.totalWeight} kg</span>
+            <span className="truncate ml-2 font-medium">{transaction.totalWeight} kg</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Machine</span>
-            <span className="truncate ml-2">{transaction.machines[0]?.name || "N/A"}</span>
+            <span className="truncate ml-2 font-medium max-w-[60%] text-right">{transaction.machines[0]?.name || "N/A"}</span>
           </div>
           
           <Separator className="my-2" />
           
           <div className="flex justify-between">
             <span className="text-muted-foreground">Site</span>
-            <span className="truncate ml-2">{transaction.location}</span>
+            <span className="truncate ml-2 font-medium max-w-[60%] text-right">{transaction.location}</span>
           </div>
           <div className="flex flex-wrap gap-1 mt-2">
             {transaction.hasIroning && (

@@ -171,30 +171,9 @@ const PickupDetail = () => {
           {(request.status === "on-the-way" || request.status === "out-for-delivery") && (
             <Card>
               <CardContent className="p-4">
-                <h3 className="text-lg font-medium mb-3">Suivi en temps réel</h3>
-                <div className="rounded-lg bg-muted h-48 flex items-center justify-center mb-4">
-                  {/* This would be an actual map in a real app */}
-                  <div className="text-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mx-auto mb-2">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    <span className="text-sm text-muted-foreground">Carte de suivi</span>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <p className="mb-1">
-                    <span className="font-medium">
-                      {request.status === "on-the-way" ? "Chauffeur en route" : "En cours de livraison"}
-                    </span>
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {request.status === "on-the-way" ? "Arrivée estimée dans 15 min" : "Livraison estimée dans 20 min"}
-                  </p>
-                  <Button className="w-full">
-                    Contacter le chauffeur
-                  </Button>
-                </div>
+                <Button className="w-full">
+                  Contacter le chauffeur
+                </Button>
               </CardContent>
             </Card>
           )}

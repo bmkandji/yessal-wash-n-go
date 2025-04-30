@@ -9,6 +9,8 @@ import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import { mockTransactions } from "@/lib/mockData";
 import { formatCurrency, formatDate } from "@/lib/utils";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const TransactionDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,62 +50,91 @@ const TransactionDetail = () => {
   };
 
   const handleDownloadInvoice = () => {
-    // This would be replaced with actual PDF generation
     toast({
       title: "Téléchargement de la facture",
-      description: "Votre facture PDF est en cours de téléchargement."
+      description: "Votre facture PDF est en cours de génération."
     });
 
-    // Create invoice content for PDF
-    const invoiceHTML = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <title>Facture Yessal #${transaction.id.slice(-5)}</title>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: sans-serif; padding: 20px; color: #333; }
-          .header { text-align: center; margin-bottom: 30px; }
-          .header h1 { color: #00bf63; margin-bottom: 5px; }
-          .details { margin: 20px 0; }
-          .details p { margin: 5px 0; }
-          .total { margin-top: 30px; font-weight: bold; font-size: 18px; }
-          .footer { margin-top: 50px; font-size: 12px; text-align: center; color: #777; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>YESSAL WASH-N-GO</h1>
-          <h2>FACTURE #${transaction.id.slice(-5)}</h2>
-          <p>Date: ${formatDate(transaction.date)}</p>
-        </div>
-        <div class="details">
-          <p><strong>Site:</strong> ${transaction.location}</p>
-          <p><strong>Poids total:</strong> ${transaction.totalWeight} kg</p>
-          <p><strong>Machine:</strong> ${transaction.machines[0]?.name || "N/A"}</p>
-          ${transaction.hasIroning ? "<p><strong>Repassage:</strong> Oui</p>" : ""}
-          ${transaction.hasDelivery ? "<p><strong>Livraison:</strong> Oui</p>" : ""}
-        </div>
-        <div class="total">
-          TOTAL: ${formatCurrency(transaction.totalPrice)} CFA
-        </div>
-        <div class="footer">
-          Merci pour votre confiance! Pour toute question, contactez-nous à contact@yessal.sn
-        </div>
-      </body>
-      </html>
-    `;
+    // Create a new PDF document
+    const doc = new jsPDF();
     
-    // Create a Blob from the HTML content
-    const blob = new Blob([invoiceHTML], { type: 'text/html' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `facture-yessal-${transaction.id.slice(-5)}.html`;
+    // Add Yessal logo info at the top
+    doc.setFontSize(20);
+    doc.setTextColor(0, 191, 99); // Green color for Yessal
+    doc.text("YESSAL", 105, 20, { align: 'center' });
+    doc.setFontSize(16);
+    doc.setTextColor(0, 0, 0);
+    doc.text(`FACTURE #${transaction.id.slice(-5)}`, 105, 30, { align: 'center' });
     
-    // Trigger download
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Add date
+    doc.setFontSize(10);
+    doc.text(`Date: ${formatDate(transaction.date)}`, 20, 40);
+    
+    // Add client info
+    doc.text(`Client: ${mockUser.name}`, 20, 50);
+    doc.text(`Téléphone: ${mockUser.phone}`, 20, 56);
+    doc.text(`Email: ${mockUser.email}`, 20, 62);
+    
+    // Add transaction details
+    doc.setFontSize(12);
+    doc.text("Détails de la transaction", 20, 75);
+    
+    const details = [
+      ["Description", "Quantité", "Prix unitaire", "Total"],
+      [
+        `Lavage (${transaction.machines[0]?.name || "Standard"})`,
+        `${transaction.totalWeight} kg`,
+        formatCurrency(transaction.totalPrice / transaction.totalWeight) + " CFA",
+        formatCurrency(transaction.totalPrice) + " CFA"
+      ]
+    ];
+    
+    // Add extras if applicable
+    if (transaction.hasIroning) {
+      details.push(["Repassage", "1", "Inclus", "Inclus"]);
+    }
+    
+    if (transaction.hasDelivery) {
+      details.push(["Livraison", "1", "Inclus", "Inclus"]);
+    }
+    
+    // Add discounts if applicable
+    if (transaction.discounts.length > 0) {
+      transaction.discounts.forEach(discount => {
+        details.push([
+          `Réduction (${discount.name})`,
+          "1",
+          `-${discount.percentage}%`,
+          `- ${formatCurrency((transaction.totalPrice * discount.percentage) / 100)} CFA`
+        ]);
+      });
+    }
+    
+    // Add table with details
+    autoTable(doc, {
+      head: [details[0]],
+      body: details.slice(1),
+      startY: 80,
+      theme: 'striped',
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [0, 191, 99], textColor: [255, 255, 255] }
+    });
+    
+    const tableEndY = (doc as any).lastAutoTable.finalY;
+    
+    // Add total
+    doc.setFontSize(12);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Total: ${formatCurrency(transaction.totalPrice)} CFA`, 150, tableEndY + 15, { align: 'right' });
+    
+    // Add footer
+    doc.setFontSize(10);
+    doc.setFont(undefined, 'normal');
+    doc.text("Merci pour votre confiance!", 105, tableEndY + 30, { align: 'center' });
+    doc.text("Pour toute question, contactez-nous à contact@yessal.sn", 105, tableEndY + 36, { align: 'center' });
+    
+    // Save the PDF
+    doc.save(`facture-yessal-${transaction.id.slice(-5)}.pdf`);
     
     toast({
       title: "Facture téléchargée",
@@ -231,6 +262,13 @@ const TransactionDetail = () => {
       <NavBar />
     </div>
   );
+};
+
+// Declaration for mockUser to be used in the invoice
+const mockUser = {
+  name: "Mohamed Diallo",
+  email: "mohamed.diallo@example.com",
+  phone: "+221 77 123 45 67"
 };
 
 export default TransactionDetail;

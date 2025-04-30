@@ -121,34 +121,6 @@ const Help = () => {
             </div>
           </CardContent>
         </Card>
-
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Questions fréquentes</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <h3 className="font-medium">Comment fonctionne la collecte ?</h3>
-              <p className="text-sm text-muted-foreground">
-                Vous pouvez demander une collecte à domicile via l'application. Choisissez l'heure et la date qui vous conviennent, et notre équipe viendra chercher votre linge.
-              </p>
-            </div>
-            <Separator className="my-2" />
-            <div className="space-y-2">
-              <h3 className="font-medium">Comment fonctionnent les points de fidélité ?</h3>
-              <p className="text-sm text-muted-foreground">
-                Chaque lavage vous rapporte 1 point. Après 10 points, vous bénéficiez d'un lavage gratuit jusqu'à 6kg.
-              </p>
-            </div>
-            <Separator className="my-2" />
-            <div className="space-y-2">
-              <h3 className="font-medium">Quelles sont les méthodes de paiement ?</h3>
-              <p className="text-sm text-muted-foreground">
-                Nous acceptons les paiements en espèces, par carte bancaire et via les solutions mobiles comme Wave et Orange Money.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       <NavBar />
