@@ -1,83 +1,82 @@
 
-import { Transaction } from "@/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Transaction } from "@/types";
 
 interface TransactionCardProps {
   transaction: Transaction;
-  onSelect?: (id: string) => void;
+  onClick: () => void;
 }
 
-const TransactionCard = ({ transaction, onSelect }: TransactionCardProps) => {
-  const statusColors: Record<string, string> = {
-    "pending": "bg-yellow-100 text-yellow-800",
-    "in-progress": "bg-blue-100 text-blue-800",
-    "completed": "bg-green-100 text-green-800",
-    "cancelled": "bg-red-100 text-red-800",
-  };
-
-  const handleClick = () => {
-    if (onSelect) {
-      onSelect(transaction.id);
-    }
-  };
-
+const TransactionCard = ({ transaction, onClick }: TransactionCardProps) => {
+  const { date, location, totalPrice, totalWeight, status } = transaction;
+  
+  // Format the date with a French locale
+  const formattedDate = format(new Date(date), "d MMMM yyyy", { locale: fr });
+  const formattedTime = format(new Date(date), "HH:mm");
+  
+  // Display in kg with 1 decimal place
+  const formattedWeight = `${totalWeight.toFixed(1)} kg`;
+  
   return (
     <Card 
-      className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-      onClick={handleClick}
+      className="cursor-pointer hover:shadow-md transition-shadow"
+      onClick={onClick}
     >
-      <CardHeader className="p-4 pb-2">
+      <div className="p-4">
         <div className="flex justify-between items-start">
-          <div className="truncate pr-2 max-w-[65%]">
-            <CardTitle className="text-lg font-medium truncate">
-              {formatCurrency(transaction.totalPrice)} CFA
-            </CardTitle>
-            <CardDescription className="truncate">
-              {formatDate(transaction.date)}
-            </CardDescription>
+          <div>
+            <p className="text-sm text-muted-foreground">{formattedDate} · {formattedTime}</p>
+            <h3 className="font-medium mt-0.5">{location}</h3>
           </div>
-          <Badge className={`${statusColors[transaction.status]} whitespace-nowrap`}>
-            {transaction.status === "completed" ? "Terminé" : 
-             transaction.status === "in-progress" ? "En cours" :
-             transaction.status === "pending" ? "En attente" : "Annulé"}
-          </Badge>
+          <StatusBadge status={status} />
         </div>
-      </CardHeader>
-      <CardContent className="p-4 pt-2">
-        <div className="text-sm space-y-2">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Poids total</span>
-            <span className="truncate ml-2 font-medium">{transaction.totalWeight} kg</span>
+        
+        <div className="flex justify-between mt-3">
+          <div className="flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground mr-1.5">
+              <path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/>
+              <path d="m13 12-3 5h4l-3 5"/>
+            </svg>
+            <span>{formattedWeight}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Machine</span>
-            <span className="truncate ml-2 font-medium max-w-[60%] text-right">{transaction.machines[0]?.name || "N/A"}</span>
-          </div>
-          
-          <Separator className="my-2" />
-          
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Site</span>
-            <span className="truncate ml-2 font-medium max-w-[60%] text-right">{transaction.location}</span>
-          </div>
-          <div className="flex flex-wrap gap-1 mt-2">
-            {transaction.hasIroning && (
-              <Badge variant="outline" className="text-xs">Repassage</Badge>
-            )}
-            {transaction.hasDelivery && (
-              <Badge variant="outline" className="text-xs">Livraison</Badge>
-            )}
-            {transaction.discounts.length > 0 && (
-              <Badge variant="outline" className="text-xs">Réduction</Badge>
-            )}
-          </div>
+          <p className="font-medium">{totalPrice.toLocaleString()} CFA</p>
         </div>
-      </CardContent>
+      </div>
     </Card>
   );
+};
+
+// Status badge component with appropriate styling based on status
+const StatusBadge = ({ status }: { status: string }) => {
+  let variant:
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "outline" = "default";
+  let label = "";
+  
+  switch (status) {
+    case "completed":
+      variant = "default";
+      label = "Complété";
+      break;
+    case "pending":
+      variant = "secondary";
+      label = "En cours";
+      break;
+    case "cancelled":
+      variant = "destructive";
+      label = "Annulé";
+      break;
+    default:
+      variant = "outline";
+      label = status;
+  }
+  
+  return <Badge variant={variant}>{label}</Badge>;
 };
 
 export default TransactionCard;

@@ -7,7 +7,7 @@ import PageHeader from "@/components/PageHeader";
 import { mockPickupRequests, mockUsers, mockUser } from "@/lib/mockData";
 import NewPickupForm from "@/components/pickup/NewPickupForm";
 import ActivePickupRequests from "@/components/pickup/ActivePickupRequests";
-import { User } from "@/types";
+import { User, UserSubscription } from "@/types";
 
 const PickupRequest = () => {
   const navigate = useNavigate();
@@ -20,10 +20,11 @@ const PickupRequest = () => {
     
     // If we have a user email, try to find the user in mockUsers
     if (userEmail && mockUsers[userEmail]) {
-      setCurrentUser(mockUsers[userEmail]);
+      const user = mockUsers[userEmail];
+      setCurrentUser(user as User);
     } else {
       // Otherwise use the default mockUser
-      setCurrentUser(mockUser);
+      setCurrentUser(mockUser as User);
     }
   }, []);
 

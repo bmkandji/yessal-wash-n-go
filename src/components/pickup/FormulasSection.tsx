@@ -16,12 +16,16 @@ const FormulasSection = ({
 }: FormulasSectionProps) => {
   return (
     <div className="border rounded-lg p-3">
-      <Label className="mb-2 block font-medium">Formules</Label>
+      <Label className="mb-2 block font-medium">
+        Formules {isPremium ? "(optionnel)" : ""}
+      </Label>
+      
       <RadioGroup
         value={formula}
         onValueChange={(value) => onFormulaChange(value as ServiceType)}
         className="flex flex-col space-y-3"
       >
+        {/* For non-premium users, show the basic formula option */}
         {!isPremium && (
           <div className="flex items-start space-x-3">
             <RadioGroupItem value="basic" id="basic" className="mt-1" />
@@ -31,6 +35,8 @@ const FormulasSection = ({
             </div>
           </div>
         )}
+        
+        {/* All users can see the detailed formula option */}
         <div className="flex items-start space-x-3">
           <RadioGroupItem value="detailed" id="detailed" className="mt-1" />
           <div className="flex-1">

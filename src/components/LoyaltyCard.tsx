@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -6,18 +5,28 @@ import { Badge } from "@/components/ui/badge";
 import QRCode from "@/components/QRCode";
 import { mockUser } from "@/lib/mockData";
 
-const LoyaltyCard = () => {
-  const loyaltyProgress = (mockUser.loyaltyPoints % 10) * 10; // Pourcentage de progression pour la prochaine récompense
-  const nextRewardAt = 10 - (mockUser.loyaltyPoints % 10);
-  const hasRewardAvailable = mockUser.loyaltyPoints % 10 === 0 && mockUser.loyaltyPoints > 0;
+const LoyaltyCard = ({ user = mockUser }) => {
+  const loyaltyProgress = (user.loyaltyPoints % 10) * 10; // Percentage progress for next reward
+  const nextRewardAt = 10 - (user.loyaltyPoints % 10);
+  const hasRewardAvailable = user.loyaltyPoints % 10 === 0 && user.loyaltyPoints > 0;
   
-  // For demo purposes, we'll check if the user has a subscription or is a student
-  const isPremium = mockUser.subscription === 'premium';
-  const isStudent = mockUser.isStudent;
-  const userStatus = isPremium ? 'Premium' : (isStudent ? 'Étudiant' : null);
+  // Determine user status based on subscription and student status
+  const isPremium = user.subscription === 'premium';
+  const isStudent = user.isStudent;
   
-  // Monthly washed kg (instead of total washes)
-  const monthlyWashedKg = mockUser.monthlyWashedKg || 35; // Default value for demo
+  let userStatus = null;
+  if (isPremium && isStudent) {
+    userStatus = 'Étudiant + Premium';
+  } else if (isPremium) {
+    userStatus = 'Premium';
+  } else if (isStudent) {
+    userStatus = 'Étudiant';
+  } else {
+    userStatus = 'Sans abonnement';
+  }
+  
+  // Monthly washed kg
+  const monthlyWashedKg = user.monthlyWashedKg || 0;
 
   const handleDownloadCard = () => {
     const qrElement = document.querySelector('#loyalty-qrcode svg');
@@ -58,14 +67,14 @@ const LoyaltyCard = () => {
     ctx.fillText("Client", 40, 140);
     ctx.font = "bold 20px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText(mockUser.name, 40, 170);
+    ctx.fillText(user.name, 40, 170);
     
     ctx.font = "16px Arial";
     ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
     ctx.fillText("ID Client", 40, 220);
     ctx.font = "bold 20px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText(mockUser.id, 40, 250);
+    ctx.fillText(user.id, 40, 250);
     
     // Add points info
     ctx.font = "16px Arial";
@@ -73,7 +82,7 @@ const LoyaltyCard = () => {
     ctx.fillText("Points", 300, 140);
     ctx.font = "bold 28px Arial";
     ctx.fillStyle = "white";
-    ctx.fillText(mockUser.loyaltyPoints.toString(), 300, 170);
+    ctx.fillText(user.loyaltyPoints.toString(), 300, 170);
     
     // Convert SVG QR code to an image
     const svgData = new XMLSerializer().serializeToString(qrElement);
@@ -88,7 +97,7 @@ const LoyaltyCard = () => {
       
       // Download the file
       const downloadLink = document.createElement("a");
-      downloadLink.download = `yessal-carte-fidelite-${mockUser.id}.png`;
+      downloadLink.download = `yessal-carte-fidelite-${user.id}.png`;
       downloadLink.href = pngFile;
       downloadLink.click();
     };
@@ -106,21 +115,19 @@ const LoyaltyCard = () => {
               <h3 className="font-bold text-xl mb-1">Carte de Fidélité</h3>
               <p className="text-sm opacity-90 mb-4">Yessal</p>
             </div>
-            {userStatus && (
-              <Badge className="bg-white text-primary hover:bg-white/90">
-                {userStatus}
-              </Badge>
-            )}
+            <Badge className="bg-white text-primary hover:bg-white/90">
+              {userStatus}
+            </Badge>
           </div>
           
           <div className="flex justify-between items-center">
             <div>
               <p className="text-xs opacity-80">Client</p>
-              <p className="font-semibold">{mockUser.name}</p>
+              <p className="font-semibold">{user.name}</p>
             </div>
             <div>
               <p className="text-xs opacity-80">ID Client</p>
-              <p className="font-semibold">{mockUser.id}</p>
+              <p className="font-semibold">{user.id}</p>
             </div>
           </div>
         </div>
@@ -134,7 +141,7 @@ const LoyaltyCard = () => {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Points actuels</p>
-            <p className="text-2xl font-bold">{mockUser.loyaltyPoints}</p>
+            <p className="text-2xl font-bold">{user.loyaltyPoints}</p>
           </div>
         </div>
         
@@ -153,7 +160,7 @@ const LoyaltyCard = () => {
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-sm">
               <span>Progression récompense</span>
-              <span className="font-medium">{mockUser.loyaltyPoints % 10}/10</span>
+              <span className="font-medium">{user.loyaltyPoints % 10}/10</span>
             </div>
             <Progress value={loyaltyProgress} className="h-2" />
             <p className="text-sm text-muted-foreground">
@@ -163,7 +170,7 @@ const LoyaltyCard = () => {
         )}
         
         <div className="flex flex-col items-center space-y-4">
-          <QRCode value={`loyalty-card`} userId={mockUser.id} size={140} />
+          <QRCode value={`loyalty-card`} userId={user.id} size={140} />
           <p className="text-sm text-center text-muted-foreground">
             Présentez ce code QR lors de votre visite
           </p>

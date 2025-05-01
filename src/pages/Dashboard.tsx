@@ -1,17 +1,14 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NavBar from "@/components/NavBar";
 import LoyaltyCard from "@/components/LoyaltyCard";
-import TransactionCard from "@/components/TransactionCard";
-import TarifsCard from "@/components/TarifsCard";
-import SitesCard from "@/components/SitesCard";
-import QRCode from "@/components/QRCode";
-import { mockUser, mockTransactions, mockSites } from "@/lib/mockData";
+import { mockUser, mockTransactions, mockSites, mockUsers } from "@/lib/mockData";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { User } from "@/types";
 import { 
   Carousel,
   CarouselContent,
@@ -24,6 +21,17 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("loyalty");
   const isMobile = useIsMobile();
+  const [currentUser, setCurrentUser] = useState<User>(mockUser as User);
+  
+  useEffect(() => {
+    // Check if we have a user email in localStorage
+    const userEmail = localStorage.getItem('userEmail');
+    
+    // If we have a user email, try to find the user in mockUsers
+    if (userEmail && mockUsers[userEmail]) {
+      setCurrentUser(mockUsers[userEmail] as User);
+    }
+  }, []);
   
   const handleViewTransaction = (id: string) => {
     navigate(`/transaction/${id}`);
@@ -38,7 +46,7 @@ const Dashboard = () => {
       <div className="bg-gradient-to-r from-yessal-green to-yessal-blue p-4 pt-8 text-white">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-xl font-bold">Bonjour, {mockUser.name.split(' ')[0]}</h1>
+            <h1 className="text-xl font-bold">Bonjour, {currentUser.name.split(' ')[0]}</h1>
             <p className="text-white/80 text-sm">Bienvenue chez Yessal</p>
           </div>
         </div>
@@ -58,8 +66,7 @@ const Dashboard = () => {
           
           <TabsContent value="loyalty" className="mt-0">
             <div id="loyalty-qrcode" className="mb-4">
-              <LoyaltyCard />
-              {/* Removed the QR code download button here */}
+              <LoyaltyCard user={currentUser} />
             </div>
           </TabsContent>
           

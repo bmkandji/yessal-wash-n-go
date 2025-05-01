@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import { Location } from "@/types";
 import { MapPin } from "lucide-react";
+import LocationMap from "./LocationMap";
 
 interface LocationSectionProps {
   address: string;
@@ -28,9 +29,17 @@ const LocationSection = ({
   onLocationStatusChange
 }: LocationSectionProps) => {
   const { toast } = useToast();
+  const [showMap, setShowMap] = useState(true);
 
   const requestLocation = () => {
     if (navigator.geolocation) {
+      // Use high accuracy for better precision
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      };
+      
       navigator.geolocation.getCurrentPosition(
         (position) => {
           onLocationChange({
@@ -51,7 +60,8 @@ const LocationSection = ({
             description: "Impossible d'obtenir votre position. Veuillez autoriser l'accès à votre localisation.",
             variant: "destructive",
           });
-        }
+        },
+        options
       );
     } else {
       toast({
@@ -62,8 +72,12 @@ const LocationSection = ({
     }
   };
 
+  const toggleMap = () => {
+    setShowMap(!showMap);
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <Label htmlFor="location" className="flex items-center gap-1">
         <MapPin size={16} />
         Localisation
@@ -71,7 +85,7 @@ const LocationSection = ({
       
       <div className={`border rounded-lg p-3 ${!hasLocation ? 'border-red-300 bg-red-50' : ''}`}>
         {hasLocation ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div onClick={requestLocation} className="flex gap-2 items-center cursor-pointer text-sm p-1 hover:bg-muted rounded">
               <span className="text-muted-foreground">Coordonnées GPS:</span>
               <span className="font-medium">
@@ -79,6 +93,25 @@ const LocationSection = ({
               </span>
               <span className="text-xs text-blue-600 ml-auto">Modifier</span>
             </div>
+            
+            {/* Map toggle button */}
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleMap}
+              className="w-full mb-2"
+            >
+              {showMap ? "Masquer la carte" : "Afficher la carte"}
+            </Button>
+            
+            {/* Location map */}
+            {showMap && (
+              <LocationMap 
+                latitude={location.latitude} 
+                longitude={location.longitude} 
+              />
+            )}
             
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox 
