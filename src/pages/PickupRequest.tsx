@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,13 +28,30 @@ const PickupRequest = () => {
     time: "",
     notes: "",
     type: "standard" as ServiceType,
-    hasIroning: false,
+    formula: "basic", // basic or detailed
+    options: {
+      hasIroning: false,
+      hasExpress: false,
+    }
   });
 
   // Filter to only show active pickup requests (not delivered or cancelled)
   const activePickupRequests = mockPickupRequests.filter(request => 
     !["delivered", "cancelled"].includes(request.status)
   );
+
+  // Effect to automatically check ironing option when detailed formula is selected
+  useEffect(() => {
+    if (formData.formula === "detailed") {
+      setFormData(prev => ({
+        ...prev,
+        options: {
+          ...prev.options,
+          hasIroning: true
+        }
+      }));
+    }
+  }, [formData.formula]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -52,28 +69,59 @@ const PickupRequest = () => {
     });
   };
 
-  const handleCheckboxChange = (checked: boolean) => {
+  const handleFormulaChange = (value: string) => {
     setFormData({
       ...formData,
-      hasIroning: checked,
+      formula: value,
     });
   };
+
+  const handleOptionChange = (option: keyof typeof formData.options, checked: boolean) => {
+    setFormData({
+      ...formData,
+      options: {
+        ...formData.options,
+        [option]: checked,
+      }
+    });
+  };
+
+  const calculatePrice = () => {
+    // Base price calculation
+    let basePrice = 0;
+    
+    if (formData.formula === "basic") {
+      // For basic formula, we use the service type price
+      basePrice = formData.type === "standard" ? 1000 : 2000;
+    } else {
+      // For detailed formula (per kg), minimum 6kg at 600F/kg
+      basePrice = 6 * 600; // 3600 CFA
+    }
+    
+    // Additional options
+    const ironingPrice = formData.options.hasIroning && formData.formula === "basic" ? 500 : 0;
+    const expressPrice = formData.options.hasExpress ? 1000 : 0;
+    
+    return {
+      basePrice,
+      ironingPrice,
+      expressPrice,
+      totalPrice: basePrice + ironingPrice + expressPrice
+    };
+  };
+
+  const priceDetails = calculatePrice();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
-    // Calculer le prix total
-    const basePrice = formData.type === "standard" ? 1000 : 2000;
-    const ironingPrice = formData.hasIroning ? 500 : 0;
-    const totalPrice = basePrice + ironingPrice;
 
     // Simuler un appel API
     setTimeout(() => {
       setIsSubmitting(false);
       toast({
         title: "Demande envoyée",
-        description: `Votre demande de collecte a été envoyée avec succès. Prix total: ${totalPrice} CFA`,
+        description: `Votre demande de collecte a été envoyée avec succès. Prix total: ${priceDetails.totalPrice} CFA`,
       });
       setActiveTab("active");
     }, 1500);
@@ -171,37 +219,95 @@ const PickupRequest = () => {
                     </RadioGroup>
                   </div>
                   
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="hasIroning" 
-                      checked={formData.hasIroning} 
-                      onCheckedChange={handleCheckboxChange}
-                    />
-                    <Label htmlFor="hasIroning" className="flex-1">
-                      Option repassage
-                    </Label>
-                    <span className="text-sm font-medium">+500 CFA</span>
+                  {/* Formules */}
+                  <div className="border rounded-lg p-3">
+                    <Label className="mb-2 block font-medium">Formules</Label>
+                    <RadioGroup
+                      value={formData.formula}
+                      onValueChange={handleFormulaChange}
+                      className="flex flex-col space-y-3"
+                    >
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="basic" id="basic" className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor="basic" className="font-medium">Formule de base</Label>
+                          <p className="text-sm text-muted-foreground">Lavage simple dans nos machines</p>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <RadioGroupItem value="detailed" id="detailed" className="mt-1" />
+                        <div className="flex-1">
+                          <Label htmlFor="detailed" className="font-medium">Formule détaillée</Label>
+                          <p className="text-sm text-muted-foreground">600 F/kg, lavé, repassé et livré (minimum 6 kg)</p>
+                        </div>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  
+                  {/* Options supplémentaires */}
+                  <div className="border rounded-lg p-3">
+                    <Label className="mb-2 block font-medium">Options supplémentaires</Label>
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="hasIroning" 
+                          checked={formData.options.hasIroning}
+                          disabled={formData.formula === "detailed"} // Disable when detailed formula is selected
+                          onCheckedChange={(checked) => 
+                            handleOptionChange("hasIroning", checked === true)
+                          }
+                        />
+                        <div className="flex justify-between items-center w-full">
+                          <Label 
+                            htmlFor="hasIroning" 
+                            className={formData.formula === "detailed" ? "text-muted-foreground" : ""}
+                          >
+                            Option repassage {formData.formula === "detailed" && "(inclus)"}
+                          </Label>
+                          {formData.formula !== "detailed" && <span className="text-sm font-medium">+500 CFA</span>}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="hasExpress" 
+                          checked={formData.options.hasExpress}
+                          onCheckedChange={(checked) => 
+                            handleOptionChange("hasExpress", checked === true)
+                          }
+                        />
+                        <div className="flex justify-between items-center w-full">
+                          <Label htmlFor="hasExpress">Service express (12-24h)</Label>
+                          <span className="text-sm font-medium">+1000 CFA</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="pt-2">
                     <div className="bg-muted p-3 rounded-md">
                       <div className="flex justify-between mb-1">
-                        <span>Frais de collecte</span>
-                        <span>{formData.type === "standard" ? "1000" : "2000"} CFA</span>
+                        <span>Prix de base</span>
+                        <span>
+                          {formData.formula === "basic" 
+                            ? `${formData.type === "standard" ? "1000" : "2000"} CFA` 
+                            : "3600 CFA (6kg minimum)"}
+                        </span>
                       </div>
-                      {formData.hasIroning && (
+                      {formData.options.hasIroning && formData.formula === "basic" && (
                         <div className="flex justify-between mb-1">
                           <span>Option repassage</span>
                           <span>500 CFA</span>
                         </div>
                       )}
+                      {formData.options.hasExpress && (
+                        <div className="flex justify-between mb-1">
+                          <span>Service express</span>
+                          <span>1000 CFA</span>
+                        </div>
+                      )}
                       <div className="flex justify-between font-medium border-t border-border mt-2 pt-2">
                         <span>Total</span>
-                        <span>
-                          {formData.type === "standard" ? 
-                            (formData.hasIroning ? "1500" : "1000") : 
-                            (formData.hasIroning ? "2500" : "2000")} CFA
-                        </span>
+                        <span>{priceDetails.totalPrice} CFA</span>
                       </div>
                     </div>
                   </div>

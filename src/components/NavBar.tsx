@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Home, History, User } from "lucide-react";
+import { Home, History, User, Shirt } from "lucide-react";
 
 const NavBar = () => {
   const location = useLocation();
@@ -11,6 +11,11 @@ const NavBar = () => {
       label: "Accueil",
       icon: <Home className="w-6 h-6" />,
       href: "/dashboard",
+    },
+    {
+      label: "Collecte",
+      icon: <Shirt className="w-6 h-6" />,
+      href: "/pickup",
     },
     {
       label: "Historique",

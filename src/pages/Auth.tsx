@@ -6,12 +6,13 @@ const Auth = () => {
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background flex flex-col justify-center p-6">
       <div className="w-full max-w-md mx-auto mb-10 text-center">
         <div className="yessal-gradient inline-block rounded-full p-4 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 12h12c1 0 2-.6 2-2V5c0-1.4-1-3-3-3H7C5 2 4 3.6 4 5v5c0 1.4 1 2 2 2Z"/>
-            <path d="M11.5 22h1c2.5 0 5-2.5 5-6 0-.3-.1-.5-.3-.7-.2-.2-.4-.3-.7-.3h-9c-.3 0-.5.1-.7.3-.2.2-.3.4-.3.7 0 3.5 2.5 6 5 6Z"/>
-          </svg>
+          <img 
+            src="/lovable-uploads/98bed627-ff1c-476a-a488-38eb3a58cc04.png" 
+            alt="Yessal Logo" 
+            className="w-16 h-16 object-contain" 
+          />
         </div>
-        <h1 className="text-3xl font-bold">Yessal Wash-N-Go</h1>
+        <h1 className="text-3xl font-bold">Yessal</h1>
         <p className="text-muted-foreground mt-2">
           Bienvenue sur l'application mobile des laveries automatiques Yessal
         </p>
