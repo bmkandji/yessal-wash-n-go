@@ -240,10 +240,7 @@ const NewPickupForm = ({
         }} hasLocation={hasLocation} onLocationChange={handleLocationChange} onAddressChange={handleAddressChange} onDefaultLocationChange={handleDefaultLocationChange} onLocationStatusChange={setHasLocation} />
 
           {/* Display map with current location */}
-          <div className="mt-2">
-            
-            <LocationMap latitude={formData.location.latitude} longitude={formData.location.longitude} />
-          </div>
+          
 
           <DateTimeSection date={formData.date} time={formData.time} onDateChange={handleDateChange} onTimeChange={handleTimeChange} />
 
