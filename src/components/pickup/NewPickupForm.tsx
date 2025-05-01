@@ -13,11 +13,12 @@ import { ServiceType, Location } from "@/types";
 
 interface NewPickupFormProps {
   isPremium: boolean;
+  isStudent: boolean;
   defaultLocation?: Location | null;
   onSuccess: () => void;
 }
 
-const NewPickupForm = ({ isPremium, defaultLocation, onSuccess }: NewPickupFormProps) => {
+const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: NewPickupFormProps) => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -108,7 +109,11 @@ const NewPickupForm = ({ isPremium, defaultLocation, onSuccess }: NewPickupFormP
   const handleLocationChange = (location: Location) => {
     setFormData({
       ...formData,
-      location
+      location: {
+        latitude: location.latitude,
+        longitude: location.longitude,
+        useAsDefault: location.useAsDefault || formData.location.useAsDefault
+      }
     });
   };
 
@@ -176,11 +181,21 @@ const NewPickupForm = ({ isPremium, defaultLocation, onSuccess }: NewPickupFormP
     const ironingPrice = formData.options.hasIroning && formData.formula === "basic" ? 500 : 0;
     const expressPrice = formData.options.hasExpress ? 1000 : 0;
     
+    // Calculate subtotal
+    const subtotal = basePrice + ironingPrice + expressPrice;
+    
+    // Student discount (10%)
+    const hasStudentDiscount = isStudent;
+    const discountAmount = hasStudentDiscount ? Math.round(subtotal * 0.1) : 0;
+    
     return {
       basePrice,
       ironingPrice,
       expressPrice,
-      totalPrice: basePrice + ironingPrice + expressPrice
+      subtotal,
+      discountAmount,
+      hasStudentDiscount,
+      totalPrice: subtotal - discountAmount
     };
   };
 
@@ -219,7 +234,11 @@ const NewPickupForm = ({ isPremium, defaultLocation, onSuccess }: NewPickupFormP
         <form onSubmit={handleSubmit} className="space-y-4">
           <LocationSection 
             address={formData.address}
-            location={formData.location}
+            location={{
+              latitude: formData.location.latitude,
+              longitude: formData.location.longitude,
+              useAsDefault: formData.location.useAsDefault
+            }}
             hasLocation={hasLocation}
             onLocationChange={handleLocationChange}
             onAddressChange={handleAddressChange}
@@ -255,6 +274,7 @@ const NewPickupForm = ({ isPremium, defaultLocation, onSuccess }: NewPickupFormP
             priceDetails={priceDetails}
             formula={formData.formula}
             options={formData.options}
+            isStudent={isStudent}
           />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>

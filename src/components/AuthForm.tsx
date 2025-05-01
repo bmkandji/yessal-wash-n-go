@@ -8,29 +8,63 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Apple, Mail, Phone } from "lucide-react";
+import { mockUsers } from "@/lib/mockData";
 
 const AuthForm = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
     
-    // Simulate authentication
-    setTimeout(() => {
-      setIsLoading(false);
-      toast({
-        title: "Connexion réussie",
-        description: "Bienvenue chez Yessal",
-      });
-      navigate("/dashboard");
-    }, 1500);
+    // Check if the email is one of our test profiles
+    const isTestProfile = Object.keys(mockUsers).includes(email);
+    
+    if (isTestProfile) {
+      // Save the email to localStorage to retrieve the user later
+      localStorage.setItem('userEmail', email);
+      
+      // Show a toast with the user type
+      const userType = [];
+      if (mockUsers[email].subscription === 'premium') userType.push('Premium');
+      if (mockUsers[email].isStudent) userType.push('Étudiant');
+      
+      const userTypeText = userType.length > 0 
+        ? `(${userType.join(' + ')})` 
+        : '(Standard)';
+      
+      setTimeout(() => {
+        setIsLoading(false);
+        toast({
+          title: "Connexion réussie",
+          description: `Bienvenue chez Yessal ${userTypeText}`,
+        });
+        navigate("/dashboard");
+      }, 1500);
+    } else {
+      // Regular authentication flow for non-test profiles
+      setTimeout(() => {
+        setIsLoading(false);
+        // Clear any previous test profile
+        localStorage.removeItem('userEmail');
+        toast({
+          title: "Connexion réussie",
+          description: "Bienvenue chez Yessal",
+        });
+        navigate("/dashboard");
+      }, 1500);
+    }
   };
 
   const handleSocialAuth = (provider: string) => {
     setIsLoading(true);
+    
+    // Clear any previous test profile
+    localStorage.removeItem('userEmail');
     
     // Simulate authentication
     setTimeout(() => {
@@ -63,7 +97,23 @@ const AuthForm = () => {
               <div className="space-y-3 sm:space-y-4">
                 <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="exemple@email.com" required />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="exemple@email.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                  />
+                  {Object.keys(mockUsers).includes(email) && (
+                    <div className="mt-1 text-xs text-primary">
+                      <p>
+                        Profil de test{' '}
+                        {mockUsers[email].subscription === 'premium' && '★ Premium '}
+                        {mockUsers[email].isStudent && '🎓 Étudiant'}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-1 sm:space-y-2">
                   <div className="flex items-center justify-between">
@@ -72,7 +122,13 @@ const AuthForm = () => {
                       Mot de passe oublié?
                     </a>
                   </div>
-                  <Input id="password" type="password" required />
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required 
+                  />
                 </div>
                 <Button type="submit" className="w-full text-sm" disabled={isLoading}>
                   {isLoading ? (
@@ -132,7 +188,7 @@ const AuthForm = () => {
           </div>
         </div>
 
-        <div className="grid gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <Button 
             variant="outline" 
             className="w-full text-xs sm:text-sm h-9"
@@ -160,7 +216,7 @@ const AuthForm = () => {
               <rect x="12" y="1" width="10" height="10" fill="#7fba00"/>
               <rect x="12" y="12" width="10" height="10" fill="#ffb900"/>
             </svg>
-            Continuer avec Microsoft
+            Microsoft
           </Button>
           
           <Button 
@@ -170,7 +226,7 @@ const AuthForm = () => {
             disabled={isLoading}
           >
             <Apple className="mr-2" size={20} />
-            Continuer avec Apple
+            Apple
           </Button>
           
           <Button 
@@ -180,8 +236,19 @@ const AuthForm = () => {
             disabled={isLoading}
           >
             <Phone className="mr-2" size={20} />
-            Continuer avec un téléphone
+            Téléphone
           </Button>
+        </div>
+
+        <div className="border border-border rounded-lg p-3 mt-4 bg-muted/30">
+          <h3 className="font-medium mb-2">Comptes de test</h3>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p><strong>premium@yessal.sn</strong> - Utilisateur Premium</p>
+            <p><strong>etudiant@yessal.sn</strong> - Utilisateur Étudiant</p>
+            <p><strong>normale@yessal.sn</strong> - Utilisateur Standard</p>
+            <p><strong>premium-etudiant@yessal.sn</strong> - Utilisateur Premium + Étudiant</p>
+            <p className="mt-2 italic">Tout mot de passe est accepté pour ces comptes</p>
+          </div>
         </div>
       </CardContent>
     </Card>

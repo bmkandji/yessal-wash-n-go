@@ -1,5 +1,5 @@
 
-import { PickupRequest, ServiceType } from "@/types";
+import { PickupRequest, ServiceType, Transaction, User, Tarif, Site } from "@/types";
 
 export const mockUser = {
   id: "USR123456",
@@ -85,6 +85,7 @@ export const mockPickupRequests: PickupRequest[] = [
     notes: "Sonnez à l'appartement 3",
     trackingCode: "YSL-P12345",
     hasIroning: true,
+    hasExpress: false,
     serviceType: "standard",
     price: 1000
   },
@@ -98,6 +99,7 @@ export const mockPickupRequests: PickupRequest[] = [
     notes: "",
     trackingCode: "YSL-P67890",
     hasIroning: false,
+    hasExpress: true,
     serviceType: "express",
     price: 2000
   }
@@ -159,3 +161,79 @@ export const mockSites: Site[] = [
     openingHours: "7h-22h tous les jours"
   }
 ];
+
+// Mock users for test profiles
+export const mockUsers: Record<string, User> = {
+  "premium@yessal.sn": {
+    id: "usr-premium",
+    name: "Utilisateur Premium",
+    email: "premium@yessal.sn",
+    phone: "+221 77 000 0001",
+    address: "Dakar Premium Residence",
+    loyaltyPoints: 25,
+    totalWashes: 12,
+    subscription: "premium",
+    isStudent: false,
+    monthlyWashedKg: 32,
+    defaultLocation: {
+      latitude: 14.758,
+      longitude: -17.366,
+      address: "Dakar Premium Residence",
+      useAsDefault: true
+    }
+  },
+  "etudiant@yessal.sn": {
+    id: "usr-etudiant",
+    name: "Utilisateur Étudiant",
+    email: "etudiant@yessal.sn",
+    phone: "+221 77 000 0002",
+    address: "Résidence Universitaire UCAD",
+    loyaltyPoints: 8,
+    totalWashes: 5,
+    subscription: null,
+    isStudent: true,
+    monthlyWashedKg: 15,
+    defaultLocation: {
+      latitude: 14.692,
+      longitude: -17.455,
+      address: "Résidence Universitaire UCAD",
+      useAsDefault: true
+    }
+  },
+  "normale@yessal.sn": {
+    id: "usr-normal",
+    name: "Utilisateur Standard",
+    email: "normale@yessal.sn",
+    phone: "+221 77 000 0003",
+    address: "123 Rue Normale, Dakar",
+    loyaltyPoints: 5,
+    totalWashes: 3,
+    subscription: null,
+    isStudent: false,
+    monthlyWashedKg: 12,
+    defaultLocation: {
+      latitude: 14.715,
+      longitude: -17.408,
+      address: "123 Rue Normale, Dakar",
+      useAsDefault: true
+    }
+  },
+  "premium-etudiant@yessal.sn": {
+    id: "usr-premium-etudiant",
+    name: "Étudiant Premium",
+    email: "premium-etudiant@yessal.sn",
+    phone: "+221 77 000 0004",
+    address: "456 Avenue des Étudiants VIP, Dakar",
+    loyaltyPoints: 15,
+    totalWashes: 8,
+    subscription: "premium",
+    isStudent: true,
+    monthlyWashedKg: 28,
+    defaultLocation: {
+      latitude: 14.735,
+      longitude: -17.388,
+      address: "456 Avenue des Étudiants VIP, Dakar",
+      useAsDefault: true
+    }
+  }
+};
