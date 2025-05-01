@@ -11,18 +11,22 @@ import PriceSection from "./PriceSection";
 import NotesSection from "./NotesSection";
 import LocationMap from "./LocationMap";
 import { ServiceType, Location } from "@/types";
-
 interface NewPickupFormProps {
   isPremium: boolean;
   isStudent: boolean;
   defaultLocation?: Location | null;
   onSuccess: () => void;
 }
-
-const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: NewPickupFormProps) => {
-  const { toast } = useToast();
+const NewPickupForm = ({
+  isPremium,
+  isStudent,
+  defaultLocation,
+  onSuccess
+}: NewPickupFormProps) => {
+  const {
+    toast
+  } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
   const [formData, setFormData] = useState({
     address: defaultLocation?.address || "",
     location: {
@@ -31,18 +35,21 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       useAsDefault: defaultLocation?.useAsDefault || false
     },
     date: new Date().toISOString().split('T')[0],
-    time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
+    time: new Date().toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit'
+    }),
     notes: "",
-    formula: isPremium ? null : ("basic" as ServiceType),
+    formula: isPremium ? null : "basic" as ServiceType,
     options: {
       hasIroning: false,
-      hasExpress: false,
+      hasExpress: false
     }
   });
 
   // Location methods
   const [hasLocation, setHasLocation] = useState(Boolean(formData.location.latitude && formData.location.longitude));
-  
+
   // Effect to automatically check ironing option when detailed formula is selected
   useEffect(() => {
     if (formData.formula === "detailed") {
@@ -63,50 +70,44 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       requestLocation();
     }
   }, []);
-
   const requestLocation = () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setFormData((prev) => ({
-            ...prev,
-            location: {
-              ...prev.location,
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude
-            }
-          }));
-          setHasLocation(true);
-          toast({
-            title: "Localisation obtenue",
-            description: "Vos coordonnées GPS ont été enregistrées avec succès.",
-          });
-        },
-        (error) => {
-          console.error("Erreur de géolocalisation:", error);
-          toast({
-            title: "Erreur de localisation",
-            description: "Impossible d'obtenir votre position. Veuillez autoriser l'accès à votre localisation.",
-            variant: "destructive",
-          });
-        }
-      );
+      navigator.geolocation.getCurrentPosition(position => {
+        setFormData(prev => ({
+          ...prev,
+          location: {
+            ...prev.location,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          }
+        }));
+        setHasLocation(true);
+        toast({
+          title: "Localisation obtenue",
+          description: "Vos coordonnées GPS ont été enregistrées avec succès."
+        });
+      }, error => {
+        console.error("Erreur de géolocalisation:", error);
+        toast({
+          title: "Erreur de localisation",
+          description: "Impossible d'obtenir votre position. Veuillez autoriser l'accès à votre localisation.",
+          variant: "destructive"
+        });
+      });
     } else {
       toast({
         title: "Géolocalisation non supportée",
         description: "Votre navigateur ne prend pas en charge la géolocalisation.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
-
   const handleAddressChange = (address: string) => {
     setFormData({
       ...formData,
       address
     });
   };
-
   const handleLocationChange = (location: Location) => {
     setFormData({
       ...formData,
@@ -117,7 +118,6 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       }
     });
   };
-
   const handleDefaultLocationChange = (useAsDefault: boolean) => {
     setFormData({
       ...formData,
@@ -127,49 +127,42 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       }
     });
   };
-
   const handleDateChange = (date: string) => {
     setFormData({
       ...formData,
       date
     });
   };
-
   const handleTimeChange = (time: string) => {
     setFormData({
       ...formData,
       time
     });
   };
-
   const handleNotesChange = (notes: string) => {
     setFormData({
       ...formData,
       notes
     });
   };
-
   const handleFormulaChange = (formula: ServiceType | null) => {
     setFormData({
       ...formData,
       formula
     });
   };
-
   const handleOptionChange = (option: keyof typeof formData.options, checked: boolean) => {
     setFormData({
       ...formData,
       options: {
         ...formData.options,
-        [option]: checked,
+        [option]: checked
       }
     });
   };
-
   const calculatePrice = () => {
     // Base price calculation
     let basePrice = 0;
-    
     if (!formData.formula) {
       // No formula selected (premium user)
       basePrice = 0;
@@ -180,18 +173,17 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       // For detailed formula (per kg), minimum 6kg at 600F/kg
       basePrice = 6 * 600; // 3600 CFA
     }
-    
+
     // Additional options
     const ironingPrice = formData.options.hasIroning && formData.formula === "basic" ? 500 : 0;
     const expressPrice = formData.options.hasExpress ? 1000 : 0;
-    
+
     // Calculate subtotal
     const subtotal = basePrice + ironingPrice + expressPrice;
-    
+
     // Student discount (10%)
     const hasStudentDiscount = isStudent;
     const discountAmount = hasStudentDiscount ? Math.round(subtotal * 0.1) : 0;
-    
     return {
       basePrice,
       ironingPrice,
@@ -202,9 +194,7 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       totalPrice: subtotal - discountAmount
     };
   };
-
   const priceDetails = calculatePrice();
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -213,7 +203,7 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       toast({
         title: "Localisation requise",
         description: "Veuillez autoriser l'accès à votre localisation pour continuer.",
-        variant: "destructive",
+        variant: "destructive"
       });
       requestLocation();
       return;
@@ -224,11 +214,10 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       toast({
         title: "Formule requise",
         description: "Veuillez sélectionner une formule pour continuer.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsSubmitting(true);
 
     // Simuler un appel API
@@ -236,103 +225,47 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       setIsSubmitting(false);
       toast({
         title: "Demande envoyée",
-        description: `Votre demande de collecte a été envoyée avec succès. Prix total: ${priceDetails.totalPrice} CFA`,
+        description: `Votre demande de collecte a été envoyée avec succès. Prix total: ${priceDetails.totalPrice} CFA`
       });
       onSuccess();
     }, 1500);
   };
-
-  return (
-    <Card>
+  return <Card>
       <CardContent className="pt-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <LocationSection 
-            address={formData.address}
-            location={{
-              latitude: formData.location.latitude,
-              longitude: formData.location.longitude,
-              useAsDefault: formData.location.useAsDefault
-            }}
-            hasLocation={hasLocation}
-            onLocationChange={handleLocationChange}
-            onAddressChange={handleAddressChange}
-            onDefaultLocationChange={handleDefaultLocationChange}
-            onLocationStatusChange={setHasLocation}
-          />
+          <LocationSection address={formData.address} location={{
+          latitude: formData.location.latitude,
+          longitude: formData.location.longitude,
+          useAsDefault: formData.location.useAsDefault
+        }} hasLocation={hasLocation} onLocationChange={handleLocationChange} onAddressChange={handleAddressChange} onDefaultLocationChange={handleDefaultLocationChange} onLocationStatusChange={setHasLocation} />
 
           {/* Display map with current location */}
           <div className="mt-2">
-            <Label className="mb-2 block font-medium">Votre position</Label>
-            <LocationMap 
-              latitude={formData.location.latitude} 
-              longitude={formData.location.longitude} 
-            />
+            
+            <LocationMap latitude={formData.location.latitude} longitude={formData.location.longitude} />
           </div>
 
-          <DateTimeSection 
-            date={formData.date}
-            time={formData.time}
-            onDateChange={handleDateChange}
-            onTimeChange={handleTimeChange}
-          />
+          <DateTimeSection date={formData.date} time={formData.time} onDateChange={handleDateChange} onTimeChange={handleTimeChange} />
 
-          <NotesSection 
-            notes={formData.notes}
-            onNotesChange={handleNotesChange}
-          />
+          <NotesSection notes={formData.notes} onNotesChange={handleNotesChange} />
           
-          <FormulasSection 
-            formula={formData.formula}
-            isPremium={isPremium}
-            onFormulaChange={handleFormulaChange}
-          />
+          <FormulasSection formula={formData.formula} isPremium={isPremium} onFormulaChange={handleFormulaChange} />
           
-          <OptionsSection 
-            options={formData.options}
-            formula={formData.formula}
-            onOptionChange={handleOptionChange}
-          />
+          <OptionsSection options={formData.options} formula={formData.formula} onOptionChange={handleOptionChange} />
 
-          <PriceSection 
-            priceDetails={priceDetails}
-            formula={formData.formula}
-            options={formData.options}
-            isStudent={isStudent}
-          />
+          <PriceSection priceDetails={priceDetails} formula={formData.formula} options={formData.options} isStudent={isStudent} />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-4 w-4 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+            {isSubmitting ? <>
+                <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Envoi en cours...
-              </>
-            ) : (
-              "Envoyer la demande"
-            )}
+              </> : "Envoyer la demande"}
           </Button>
         </form>
       </CardContent>
-    </Card>
-  );
+    </Card>;
 };
-
 export default NewPickupForm;
