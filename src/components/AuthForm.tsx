@@ -3,11 +3,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { useNavigate } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
 import { Apple, Mail, Phone } from "lucide-react";
 
 const AuthForm = () => {
@@ -45,15 +44,15 @@ const AuthForm = () => {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl text-center">Se connecter</CardTitle>
-        <CardDescription className="text-center">
+    <Card className="w-full max-w-md mx-auto overflow-hidden">
+      <CardHeader className="pb-3 sm:pb-6">
+        <CardTitle className="text-xl sm:text-2xl text-center">Se connecter</CardTitle>
+        <CardDescription className="text-center text-xs sm:text-sm">
           Connectez-vous pour accéder à votre compte
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 px-3 sm:px-6">
         <Tabs defaultValue="login" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Connexion</TabsTrigger>
@@ -61,24 +60,24 @@ const AuthForm = () => {
           </TabsList>
           <TabsContent value="login">
             <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div className="space-y-2">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" placeholder="exemple@email.com" required />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="password">Mot de passe</Label>
-                    <a href="#" className="text-sm text-primary hover:underline">
+                    <a href="#" className="text-xs sm:text-sm text-primary hover:underline">
                       Mot de passe oublié?
                     </a>
                   </div>
                   <Input id="password" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full text-sm" disabled={isLoading}>
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
@@ -93,28 +92,28 @@ const AuthForm = () => {
           </TabsContent>
           <TabsContent value="register">
             <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                <div className="space-y-2">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="register-name">Nom complet</Label>
                   <Input id="register-name" placeholder="Amadou Diop" required />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="register-email">Email</Label>
                   <Input id="register-email" type="email" placeholder="exemple@email.com" required />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="register-phone">Téléphone</Label>
                   <Input id="register-phone" type="tel" placeholder="+221 XX XXX XX XX" required />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="register-password">Mot de passe</Label>
                   <Input id="register-password" type="password" required />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-2">
                   <Label htmlFor="register-confirm">Confirmez le mot de passe</Label>
                   <Input id="register-confirm" type="password" required />
                 </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button type="submit" className="w-full text-sm" disabled={isLoading}>
                   {isLoading ? "Création du compte..." : "Créer un compte"}
                 </Button>
               </div>
@@ -136,11 +135,11 @@ const AuthForm = () => {
         <div className="grid gap-2">
           <Button 
             variant="outline" 
-            className="w-full"
+            className="w-full text-xs sm:text-sm h-9"
             onClick={() => handleSocialAuth("Google")}
             disabled={isLoading}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" className="mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" className="mr-2">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -151,7 +150,7 @@ const AuthForm = () => {
           
           <Button 
             variant="outline" 
-            className="w-full"
+            className="w-full text-xs sm:text-sm h-9"
             onClick={() => handleSocialAuth("Microsoft")}
             disabled={isLoading}
           >
@@ -161,27 +160,27 @@ const AuthForm = () => {
               <rect x="12" y="1" width="10" height="10" fill="#7fba00"/>
               <rect x="12" y="12" width="10" height="10" fill="#ffb900"/>
             </svg>
-            Continuer avec un compte Microsoft
+            Continuer avec Microsoft
           </Button>
           
           <Button 
             variant="outline" 
-            className="w-full"
+            className="w-full text-xs sm:text-sm h-9"
             onClick={() => handleSocialAuth("Apple")}
             disabled={isLoading}
           >
-            <Apple className="mr-2" />
+            <Apple className="mr-2" size={20} />
             Continuer avec Apple
           </Button>
           
           <Button 
             variant="outline" 
-            className="w-full"
+            className="w-full text-xs sm:text-sm h-9"
             onClick={() => handleSocialAuth("Téléphone")}
             disabled={isLoading}
           >
-            <Phone className="mr-2" />
-            Continuer avec un numéro de téléphone
+            <Phone className="mr-2" size={20} />
+            Continuer avec un téléphone
           </Button>
         </div>
       </CardContent>

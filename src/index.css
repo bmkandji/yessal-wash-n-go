@@ -95,6 +95,25 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Mobile adjustments to ensure content fits */
+  @media (max-width: 640px) {
+    .container {
+      padding-left: 0.75rem !important;
+      padding-right: 0.75rem !important;
+    }
+    
+    /* Reduce default page padding on mobile */
+    .p-6 {
+      padding: 0.75rem !important;
+    }
+    
+    /* Override all root padding for better mobile experience */
+    #root {
+      padding: 0.5rem !important;
+      max-width: 100% !important;
+    }
+  }
 }
 
 @layer utilities {
