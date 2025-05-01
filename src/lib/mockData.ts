@@ -1,15 +1,23 @@
 
-import { Transaction, User, PickupRequest, Tarif, Site } from '@/types';
+import { PickupRequest, ServiceType } from "@/types";
 
-// Mock user data
-export const mockUser: User = {
-  id: "u1",
-  name: "Amadou Diop",
-  email: "amadou.diop@example.com",
-  phone: "+221 77 123 4567",
-  address: "123 Rue Principale, Thiès, Sénégal",
-  loyaltyPoints: 7,
-  totalWashes: 17
+export const mockUser = {
+  id: "USR123456",
+  name: "Marie Diallo",
+  email: "marie@example.com",
+  phone: "+221 77 123 45 67",
+  address: "123 Rue des Almadies, Dakar",
+  loyaltyPoints: 17,
+  totalWashes: 23,
+  subscription: "premium", // 'standard', 'premium', null
+  isStudent: false,
+  monthlyWashedKg: 35,
+  defaultLocation: {
+    latitude: 14.7645042,
+    longitude: -17.3660286,
+    address: "123 Rue des Almadies, Dakar",
+    useAsDefault: true
+  }
 };
 
 // Mock transactions

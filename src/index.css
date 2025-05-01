@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -99,19 +98,42 @@
   /* Mobile adjustments to ensure content fits */
   @media (max-width: 640px) {
     .container {
-      padding-left: 0.75rem !important;
-      padding-right: 0.75rem !important;
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+      width: 100% !important;
+      max-width: 100% !important;
     }
     
     /* Reduce default page padding on mobile */
-    .p-6 {
+    .p-6, .p-4 {
       padding: 0.75rem !important;
     }
     
     /* Override all root padding for better mobile experience */
     #root {
-      padding: 0.5rem !important;
+      padding: 0.25rem !important;
       max-width: 100% !important;
+    }
+    
+    /* Make sure all input components fit on mobile */
+    input, select, textarea {
+      font-size: 16px !important; /* Prevents iOS zoom */
+    }
+    
+    /* Ensure tabs and buttons are properly sized on mobile */
+    .TabsTrigger {
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    
+    /* Make cards more compact on mobile */
+    .card {
+      margin-bottom: 0.5rem !important;
+    }
+    
+    /* Adjust button sizes on mobile */
+    .button {
+      padding: 0.5rem 0.75rem !important;
     }
   }
 }

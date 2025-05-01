@@ -13,26 +13,83 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import PickupRequestCard from "@/components/PickupRequestCard";
-import { mockPickupRequests } from "@/lib/mockData";
+import { mockPickupRequests, mockUser } from "@/lib/mockData";
 import { ServiceType } from "@/types";
+import { MapPin, Clock, Calendar } from "lucide-react";
 
 const PickupRequest = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("new");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  
+  // Check if the user has a premium subscription
+  const isPremium = mockUser.subscription === 'premium';
 
   const [formData, setFormData] = useState({
-    address: "",
-    date: "",
-    time: "",
+    address: mockUser.defaultLocation?.address || "",
+    location: {
+      latitude: mockUser.defaultLocation?.latitude || null,
+      longitude: mockUser.defaultLocation?.longitude || null,
+      useAsDefault: mockUser.defaultLocation?.useAsDefault || false
+    },
+    date: new Date().toISOString().split('T')[0],
+    time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     notes: "",
-    formula: "basic", // basic or detailed
+    formula: isPremium ? "detailed" : "basic", // Only detailed formula for premium users
     options: {
-      hasIroning: false,
+      hasIroning: isPremium || false, // Auto-checked for detailed formula
       hasExpress: false,
     }
   });
+
+  // Location methods
+  const [hasLocation, setHasLocation] = useState(Boolean(formData.location.latitude && formData.location.longitude));
+  
+  const requestLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setFormData((prev) => ({
+            ...prev,
+            location: {
+              ...prev.location,
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            }
+          }));
+          setHasLocation(true);
+          toast({
+            title: "Localisation obtenue",
+            description: "Vos coordonnées GPS ont été enregistrées avec succès.",
+          });
+        },
+        (error) => {
+          console.error("Erreur de géolocalisation:", error);
+          toast({
+            title: "Erreur de localisation",
+            description: "Impossible d'obtenir votre position. Veuillez autoriser l'accès à votre localisation.",
+            variant: "destructive",
+          });
+        }
+      );
+    } else {
+      toast({
+        title: "Géolocalisation non supportée",
+        description: "Votre navigateur ne prend pas en charge la géolocalisation.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Request location on first visit if no location is saved
+  useEffect(() => {
+    const firstVisit = !mockUser.defaultLocation?.latitude;
+    if (firstVisit && !hasLocation) {
+      requestLocation();
+    }
+  }, []);
 
   // Filter to only show active pickup requests (not delivered or cancelled)
   const activePickupRequests = mockPickupRequests.filter(request => 
@@ -78,6 +135,16 @@ const PickupRequest = () => {
     });
   };
 
+  const handleLocationDefaultChange = (checked: boolean) => {
+    setFormData({
+      ...formData,
+      location: {
+        ...formData.location,
+        useAsDefault: checked
+      }
+    });
+  };
+
   const calculatePrice = () => {
     // Base price calculation
     let basePrice = 0;
@@ -106,6 +173,18 @@ const PickupRequest = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check if location has been provided
+    if (!hasLocation) {
+      toast({
+        title: "Localisation requise",
+        description: "Veuillez autoriser l'accès à votre localisation pour continuer.",
+        variant: "destructive",
+      });
+      requestLocation();
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Simuler un appel API
@@ -138,21 +217,70 @@ const PickupRequest = () => {
             <Card>
               <CardContent className="pt-4">
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {/* Location Section */}
                   <div className="space-y-2">
-                    <Label htmlFor="address">Adresse de collecte</Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      placeholder="123 Rue Principale, Thiès"
-                      value={formData.address}
-                      onChange={handleChange}
-                      required
-                    />
+                    <Label htmlFor="location" className="flex items-center gap-1">
+                      <MapPin size={16} />
+                      Localisation
+                    </Label>
+                    
+                    <div className={`border rounded-lg p-3 ${!hasLocation ? 'border-red-300 bg-red-50' : ''}`}>
+                      {hasLocation ? (
+                        <div className="space-y-2">
+                          <div onClick={requestLocation} className="flex gap-2 items-center cursor-pointer text-sm p-1 hover:bg-muted rounded">
+                            <span className="text-muted-foreground">Coordonnées GPS:</span>
+                            <span className="font-medium">
+                              {formData.location.latitude?.toFixed(6)}, {formData.location.longitude?.toFixed(6)}
+                            </span>
+                            <span className="text-xs text-blue-600 ml-auto">Modifier</span>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 mt-2">
+                            <Checkbox 
+                              id="defaultLocation" 
+                              checked={formData.location.useAsDefault}
+                              onCheckedChange={(checked) => handleLocationDefaultChange(checked === true)}
+                            />
+                            <Label htmlFor="defaultLocation" className="text-sm">
+                              Utiliser cette localisation par défaut
+                            </Label>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <p className="text-sm text-red-600 mb-2">Veuillez autoriser l'accès à votre localisation</p>
+                          <Button 
+                            type="button" 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={requestLocation}
+                            className="w-full"
+                          >
+                            Partager ma localisation
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-1 mt-2">
+                      <Label htmlFor="address" className="text-sm">Adresse (optionnel)</Label>
+                      <Input
+                        id="address"
+                        name="address"
+                        placeholder="123 Rue Principale, Thiès"
+                        value={formData.address}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
+                  {/* Date and Time */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="date">Date</Label>
+                      <Label htmlFor="date" className="flex items-center gap-1">
+                        <Calendar size={16} />
+                        Date
+                      </Label>
                       <Input
                         id="date"
                         name="date"
@@ -163,7 +291,10 @@ const PickupRequest = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="time">Heure</Label>
+                      <Label htmlFor="time" className="flex items-center gap-1">
+                        <Clock size={16} />
+                        Heure
+                      </Label>
                       <Input
                         id="time"
                         name="time"
@@ -195,13 +326,15 @@ const PickupRequest = () => {
                       onValueChange={handleFormulaChange}
                       className="flex flex-col space-y-3"
                     >
-                      <div className="flex items-start space-x-3">
-                        <RadioGroupItem value="basic" id="basic" className="mt-1" />
-                        <div className="flex-1">
-                          <Label htmlFor="basic" className="font-medium">Formule de base</Label>
-                          <p className="text-sm text-muted-foreground">Lavage simple dans nos machines</p>
+                      {!isPremium && (
+                        <div className="flex items-start space-x-3">
+                          <RadioGroupItem value="basic" id="basic" className="mt-1" />
+                          <div className="flex-1">
+                            <Label htmlFor="basic" className="font-medium">Formule de base</Label>
+                            <p className="text-sm text-muted-foreground">Lavage simple dans nos machines</p>
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="flex items-start space-x-3">
                         <RadioGroupItem value="detailed" id="detailed" className="mt-1" />
                         <div className="flex-1">

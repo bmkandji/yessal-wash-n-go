@@ -10,6 +10,14 @@ const LoyaltyCard = () => {
   const loyaltyProgress = (mockUser.loyaltyPoints % 10) * 10; // Pourcentage de progression pour la prochaine récompense
   const nextRewardAt = 10 - (mockUser.loyaltyPoints % 10);
   const hasRewardAvailable = mockUser.loyaltyPoints % 10 === 0 && mockUser.loyaltyPoints > 0;
+  
+  // For demo purposes, we'll check if the user has a subscription or is a student
+  const isPremium = mockUser.subscription === 'premium';
+  const isStudent = mockUser.isStudent;
+  const userStatus = isPremium ? 'Premium' : (isStudent ? 'Étudiant' : null);
+  
+  // Monthly washed kg (instead of total washes)
+  const monthlyWashedKg = mockUser.monthlyWashedKg || 35; // Default value for demo
 
   const handleDownloadCard = () => {
     const qrElement = document.querySelector('#loyalty-qrcode svg');
@@ -93,8 +101,17 @@ const LoyaltyCard = () => {
       <div className="yessal-gradient text-white p-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-white/10 backdrop-blur-sm opacity-50"></div>
         <div className="relative z-10">
-          <h3 className="font-bold text-xl mb-1">Carte de Fidélité</h3>
-          <p className="text-sm opacity-90 mb-4">Yessal</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h3 className="font-bold text-xl mb-1">Carte de Fidélité</h3>
+              <p className="text-sm opacity-90 mb-4">Yessal</p>
+            </div>
+            {userStatus && (
+              <Badge className="bg-white text-primary hover:bg-white/90">
+                {userStatus}
+              </Badge>
+            )}
+          </div>
           
           <div className="flex justify-between items-center">
             <div>
@@ -112,8 +129,8 @@ const LoyaltyCard = () => {
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-sm text-muted-foreground">Lavages totaux</p>
-            <p className="text-2xl font-bold">{mockUser.totalWashes}</p>
+            <p className="text-sm text-muted-foreground">Kg lavés ce mois</p>
+            <p className="text-2xl font-bold">{monthlyWashedKg}</p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Points actuels</p>

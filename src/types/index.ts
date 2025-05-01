@@ -1,5 +1,15 @@
 
-// User related types
+export type ServiceType = "basic" | "detailed";
+
+export type UserSubscription = "standard" | "premium" | null;
+
+export interface Location {
+  latitude: number | null;
+  longitude: number | null;
+  address?: string;
+  useAsDefault?: boolean;
+}
+
 export interface User {
   id: string;
   name: string;
@@ -8,88 +18,24 @@ export interface User {
   address: string;
   loyaltyPoints: number;
   totalWashes: number;
+  subscription?: UserSubscription;
+  isStudent?: boolean;
+  monthlyWashedKg?: number;
+  defaultLocation?: Location;
 }
 
-// Authentication related types
-export interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-}
-
-// Transaction types
-export interface Transaction {
-  id: string;
-  userId: string;
-  date: string;
-  totalWeight: number; // in kg
-  machines: Machine[];
-  hasIroning: boolean;
-  hasDelivery: boolean;
-  discounts: Discount[];
-  totalPrice: number;
-  location: string;
-  status: TransactionStatus;
-}
-
-export type TransactionStatus = 
-  | "pending" 
-  | "in-progress" 
-  | "completed" 
-  | "cancelled";
-
-export interface Machine {
-  id: string;
-  name: string;
-  capacity: number;
-}
-
-export interface Discount {
-  id: string;
-  name: string;
-  percentage: number;
-}
-
-// Pickup request types
 export interface PickupRequest {
   id: string;
+  trackingCode: string;
   userId: string;
-  status: PickupStatus;
   pickupAddress: string;
+  pickupLocation?: Location;
   pickupTime: string;
   estimatedDeliveryTime: string;
-  notes: string;
-  trackingCode: string;
-  hasIroning: boolean;
   serviceType: ServiceType;
+  hasIroning: boolean;
+  hasExpress: boolean;
+  status: "pending" | "confirmed" | "on-the-way" | "picked-up" | "processing" | "out-for-delivery" | "delivered" | "cancelled";
   price: number;
-}
-
-export type ServiceType = "standard" | "express";
-
-export type PickupStatus = 
-  | "pending" 
-  | "confirmed"
-  | "on-the-way" 
-  | "picked-up" 
-  | "processing"
-  | "out-for-delivery" 
-  | "delivered" 
-  | "cancelled";
-
-// Tarif types
-export interface Tarif {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  isPromotion: boolean;
-}
-
-// Site types
-export interface Site {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-  openingHours: string;
+  notes?: string;
 }
