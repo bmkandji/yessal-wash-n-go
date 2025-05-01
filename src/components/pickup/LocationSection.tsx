@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/components/ui/use-toast";
 import { Location } from "@/types";
 import { MapPin } from "lucide-react";
+import LocationMap from "./LocationMap";
 
 interface LocationSectionProps {
   address: string;
@@ -28,6 +29,7 @@ const LocationSection = ({
   onLocationStatusChange
 }: LocationSectionProps) => {
   const { toast } = useToast();
+  const [showMap, setShowMap] = useState(true);
 
   const requestLocation = () => {
     if (navigator.geolocation) {
@@ -70,6 +72,10 @@ const LocationSection = ({
     }
   };
 
+  const toggleMap = () => {
+    setShowMap(!showMap);
+  };
+
   return (
     <div className="space-y-3">
       <Label htmlFor="location" className="flex items-center gap-1">
@@ -88,7 +94,24 @@ const LocationSection = ({
               <span className="text-xs text-blue-600 ml-auto">Modifier</span>
             </div>
             
-            {/* Map toggle button and map display have been removed */}
+            {/* Map toggle button */}
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={toggleMap}
+              className="w-full mb-2"
+            >
+              {showMap ? "Masquer la carte" : "Afficher la carte"}
+            </Button>
+            
+            {/* Location map */}
+            {showMap && (
+              <LocationMap 
+                latitude={location.latitude} 
+                longitude={location.longitude} 
+              />
+            )}
             
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox 
