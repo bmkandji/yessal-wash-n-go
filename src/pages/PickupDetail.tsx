@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,16 +7,16 @@ import NavBar from "@/components/NavBar";
 import PageHeader from "@/components/PageHeader";
 import { mockPickupRequests } from "@/lib/mockData";
 import { formatDate, formatCurrency, getStatusProgress } from "@/lib/utils";
-
 const PickupDetail = () => {
-  const { id } = useParams<{ id: string }>();
+  const {
+    id
+  } = useParams<{
+    id: string;
+  }>();
   const navigate = useNavigate();
-  
   const request = mockPickupRequests.find(p => p.id === id);
-  
   if (!request) {
-    return (
-      <div className="container max-w-md mx-auto p-4">
+    return <div className="container max-w-md mx-auto p-4">
         <PageHeader title="Demande non trouvée" showBackButton />
         <div className="text-center py-10">
           <p className="text-muted-foreground">
@@ -27,10 +26,8 @@ const PickupDetail = () => {
             Retour aux demandes
           </Button>
         </div>
-      </div>
-    );
+      </div>;
   }
-  
   const statusColors: Record<string, string> = {
     "pending": "bg-yellow-100 text-yellow-800",
     "confirmed": "bg-blue-100 text-blue-800",
@@ -39,9 +36,8 @@ const PickupDetail = () => {
     "processing": "bg-purple-100 text-purple-800",
     "out-for-delivery": "bg-indigo-100 text-indigo-800",
     "delivered": "bg-green-100 text-green-800",
-    "cancelled": "bg-red-100 text-red-800",
+    "cancelled": "bg-red-100 text-red-800"
   };
-  
   const statusLabels: Record<string, string> = {
     "pending": "En attente",
     "confirmed": "Confirmé",
@@ -50,18 +46,12 @@ const PickupDetail = () => {
     "processing": "En traitement",
     "out-for-delivery": "En livraison",
     "delivered": "Livré",
-    "cancelled": "Annulé",
+    "cancelled": "Annulé"
   };
-  
   const statusProgress = getStatusProgress(request.status);
-
-  return (
-    <div className="container max-w-md mx-auto pb-20">
+  return <div className="container max-w-md mx-auto pb-20">
       <div className="p-4">
-        <PageHeader 
-          title={`Collecte #${request.trackingCode.slice(-5)}`} 
-          showBackButton
-        />
+        <PageHeader title={`Collecte #${request.trackingCode.slice(-5)}`} showBackButton />
         
         <div className="space-y-4">
           <Card>
@@ -75,8 +65,7 @@ const PickupDetail = () => {
                 </Badge>
               </div>
               
-              {request.status !== "cancelled" && (
-                <div className="space-y-2">
+              {request.status !== "cancelled" && <div className="space-y-2">
                   <Progress value={statusProgress} className="h-2" />
                   
                   <div className="grid grid-cols-5 text-xs">
@@ -111,8 +100,7 @@ const PickupDetail = () => {
                       </span>
                     </div>
                   </div>
-                </div>
-              )}
+                </div>}
             </CardContent>
           </Card>
           
@@ -158,38 +146,23 @@ const PickupDetail = () => {
                   <p className="font-medium">{formatCurrency(request.price)} CFA</p>
                 </div>
                 
-                {request.notes && (
-                  <div className="space-y-1">
+                {request.notes && <div className="space-y-1">
                     <span className="text-sm text-muted-foreground">Notes</span>
                     <p>{request.notes}</p>
-                  </div>
-                )}
+                  </div>}
               </div>
             </CardContent>
           </Card>
           
-          {(request.status === "on-the-way" || request.status === "out-for-delivery") && (
-            <Card>
+          {(request.status === "on-the-way" || request.status === "out-for-delivery") && <Card>
               <CardContent className="p-4">
-                <Button className="w-full">
-                  Contacter le chauffeur
-                </Button>
+                <Button className="w-full">Contacter le gérant</Button>
               </CardContent>
-            </Card>
-          )}
+            </Card>}
           
-          {request.status !== "delivered" && request.status !== "cancelled" && (
-            <Card>
-              <CardContent className="p-4">
-                <Button variant="outline" className="w-full text-red-500">
-                  Annuler la demande
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+          {request.status !== "delivered" && request.status !== "cancelled"}
           
-          {request.status === "delivered" && (
-            <Card>
+          {request.status === "delivered" && <Card>
               <CardContent className="p-4 text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary mx-auto mb-2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
@@ -203,14 +176,11 @@ const PickupDetail = () => {
                   Noter le service
                 </Button>
               </CardContent>
-            </Card>
-          )}
+            </Card>}
         </div>
       </div>
       
       <NavBar />
-    </div>
-  );
+    </div>;
 };
-
 export default PickupDetail;
