@@ -27,7 +27,6 @@ const PickupRequest = () => {
     date: "",
     time: "",
     notes: "",
-    type: "standard" as ServiceType,
     formula: "basic", // basic or detailed
     options: {
       hasIroning: false,
@@ -62,13 +61,6 @@ const PickupRequest = () => {
     });
   };
 
-  const handleRadioChange = (value: ServiceType) => {
-    setFormData({
-      ...formData,
-      type: value,
-    });
-  };
-
   const handleFormulaChange = (value: string) => {
     setFormData({
       ...formData,
@@ -91,8 +83,8 @@ const PickupRequest = () => {
     let basePrice = 0;
     
     if (formData.formula === "basic") {
-      // For basic formula, we use the service type price
-      basePrice = formData.type === "standard" ? 1000 : 2000;
+      // For basic formula, standard price
+      basePrice = 1000;
     } else {
       // For detailed formula (per kg), minimum 6kg at 600F/kg
       basePrice = 6 * 600; // 3600 CFA
@@ -194,30 +186,6 @@ const PickupRequest = () => {
                       className="min-h-[100px]"
                     />
                   </div>
-
-                  <div className="space-y-2">
-                    <Label>Type de service</Label>
-                    <RadioGroup
-                      value={formData.type}
-                      onValueChange={handleRadioChange as (value: string) => void}
-                      className="flex flex-col space-y-2"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="standard" id="standard" />
-                        <Label htmlFor="standard" className="flex-1">
-                          Standard (24-48h)
-                        </Label>
-                        <span className="text-sm font-medium">1000 CFA</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="express" id="express" />
-                        <Label htmlFor="express" className="flex-1">
-                          Express (12-24h)
-                        </Label>
-                        <span className="text-sm font-medium">2000 CFA</span>
-                      </div>
-                    </RadioGroup>
-                  </div>
                   
                   {/* Formules */}
                   <div className="border rounded-lg p-3">
@@ -248,25 +216,23 @@ const PickupRequest = () => {
                   <div className="border rounded-lg p-3">
                     <Label className="mb-2 block font-medium">Options supplémentaires</Label>
                     <div className="space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox 
-                          id="hasIroning" 
-                          checked={formData.options.hasIroning}
-                          disabled={formData.formula === "detailed"} // Disable when detailed formula is selected
-                          onCheckedChange={(checked) => 
-                            handleOptionChange("hasIroning", checked === true)
-                          }
-                        />
-                        <div className="flex justify-between items-center w-full">
-                          <Label 
-                            htmlFor="hasIroning" 
-                            className={formData.formula === "detailed" ? "text-muted-foreground" : ""}
-                          >
-                            Option repassage {formData.formula === "detailed" && "(inclus)"}
-                          </Label>
-                          {formData.formula !== "detailed" && <span className="text-sm font-medium">+500 CFA</span>}
+                      {formData.formula === "basic" && (
+                        <div className="flex items-center space-x-2">
+                          <Checkbox 
+                            id="hasIroning" 
+                            checked={formData.options.hasIroning}
+                            onCheckedChange={(checked) => 
+                              handleOptionChange("hasIroning", checked === true)
+                            }
+                          />
+                          <div className="flex justify-between items-center w-full">
+                            <Label htmlFor="hasIroning">
+                              Option repassage (kg)
+                            </Label>
+                            <span className="text-sm font-medium">+500 CFA</span>
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="flex items-center space-x-2">
                         <Checkbox 
                           id="hasExpress" 
@@ -276,7 +242,7 @@ const PickupRequest = () => {
                           }
                         />
                         <div className="flex justify-between items-center w-full">
-                          <Label htmlFor="hasExpress">Service express (12-24h)</Label>
+                          <Label htmlFor="hasExpress">Service express (6h chrono)</Label>
                           <span className="text-sm font-medium">+1000 CFA</span>
                         </div>
                       </div>
@@ -289,7 +255,7 @@ const PickupRequest = () => {
                         <span>Prix de base</span>
                         <span>
                           {formData.formula === "basic" 
-                            ? `${formData.type === "standard" ? "1000" : "2000"} CFA` 
+                            ? "1000 CFA" 
                             : "3600 CFA (6kg minimum)"}
                         </span>
                       </div>

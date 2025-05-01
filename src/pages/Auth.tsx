@@ -5,7 +5,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background flex flex-col justify-center p-6">
       <div className="w-full max-w-md mx-auto mb-10 text-center">
-        <div className="yessal-gradient inline-block rounded-full p-4 mb-4">
+        <div className="bg-white inline-block rounded-full p-4 mb-4">
           <img 
             src="/lovable-uploads/98bed627-ff1c-476a-a488-38eb3a58cc04.png" 
             alt="Yessal Logo" 
@@ -13,7 +13,7 @@ const Auth = () => {
           />
         </div>
         <h1 className="text-3xl font-bold">Yessal</h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-sm text-muted-foreground mt-2">
           Bienvenue sur l'application mobile des laveries automatiques Yessal
         </p>
       </div>
