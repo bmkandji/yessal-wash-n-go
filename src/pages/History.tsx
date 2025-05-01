@@ -8,7 +8,7 @@ import { mockTransactions } from "@/lib/mockData";
 
 const History = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<"all" | "completed" | "pending" | "cancelled">("all");
+  const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
   
   // Filter transactions based on the selected filter
   const filteredTransactions = mockTransactions.filter(transaction => {
@@ -25,7 +25,7 @@ const History = () => {
       <div className="p-4">
         <PageHeader title="Historique des lavages" />
         
-        <div className="flex space-x-2 mb-4 overflow-x-auto py-1">
+        <div className="grid grid-cols-3 gap-2 mb-4">
           <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
             Tous
           </FilterButton>
@@ -34,9 +34,6 @@ const History = () => {
           </FilterButton>
           <FilterButton active={filter === "pending"} onClick={() => setFilter("pending")}>
             En cours
-          </FilterButton>
-          <FilterButton active={filter === "cancelled"} onClick={() => setFilter("cancelled")}>
-            Annulés
           </FilterButton>
         </div>
         
@@ -64,7 +61,7 @@ const History = () => {
 
 const FilterButton = ({ children, active, onClick }: { children: React.ReactNode, active: boolean, onClick: () => void }) => (
   <button
-    className={`px-4 py-1 rounded-full text-sm whitespace-nowrap ${
+    className={`px-4 py-1.5 rounded-lg text-sm w-full ${
       active
         ? "bg-primary text-primary-foreground"
         : "bg-muted text-muted-foreground hover:bg-muted/80"

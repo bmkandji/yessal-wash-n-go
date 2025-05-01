@@ -10,7 +10,7 @@ interface PickupOptions {
 
 interface OptionsSectionProps {
   options: PickupOptions;
-  formula: ServiceType;
+  formula: ServiceType | null;
   onOptionChange: (option: keyof PickupOptions, value: boolean) => void;
 }
 

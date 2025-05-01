@@ -49,6 +49,9 @@ const TransactionDetail = () => {
     "cancelled": "Annulé",
   };
 
+  // Get service type from transaction (assume basic if not found)
+  const serviceType = transaction.serviceType || "basic";
+
   const handleDownloadInvoice = () => {
     toast({
       title: "Téléchargement de la facture",
@@ -82,7 +85,7 @@ const TransactionDetail = () => {
     const details = [
       ["Description", "Quantité", "Prix unitaire", "Total"],
       [
-        `Lavage (${transaction.machines[0]?.name || "Standard"})`,
+        `Lavage (${serviceType})`,
         `${transaction.totalWeight} kg`,
         formatCurrency(transaction.totalPrice / transaction.totalWeight) + " CFA",
         formatCurrency(transaction.totalPrice) + " CFA"
@@ -181,25 +184,23 @@ const TransactionDetail = () => {
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Machine</span>
+                  <span className="text-muted-foreground">Formule</span>
                   <span className="font-medium truncate max-w-[60%] text-right">
-                    {transaction.machines[0]?.name || "N/A"}
+                    {serviceType === "basic" ? "Formule de base" : 
+                     serviceType === "detailed" ? "Formule détaillée" : 
+                     serviceType || "Standard"}
                   </span>
                 </div>
                 
-                {transaction.hasIroning && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Repassage</span>
-                    <span className="font-medium">Oui</span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Repassage</span>
+                  <span className="font-medium">{transaction.hasIroning ? "Oui" : "Non"}</span>
+                </div>
                 
-                {transaction.hasDelivery && (
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Livraison</span>
-                    <span className="font-medium">Oui</span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">Livraison</span>
+                  <span className="font-medium">{transaction.hasDelivery ? "Oui" : "Non"}</span>
+                </div>
                 
                 {transaction.discounts.length > 0 && (
                   <div className="flex justify-between items-center">

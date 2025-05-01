@@ -52,6 +52,7 @@ export interface Transaction {
   totalPrice: number;
   location: string;
   status: "completed" | "pending" | "cancelled";
+  serviceType?: ServiceType;
 }
 
 export interface Machine {

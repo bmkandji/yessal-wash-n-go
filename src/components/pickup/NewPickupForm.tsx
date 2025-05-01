@@ -9,6 +9,7 @@ import FormulasSection from "./FormulasSection";
 import OptionsSection from "./OptionsSection";
 import PriceSection from "./PriceSection";
 import NotesSection from "./NotesSection";
+import LocationMap from "./LocationMap";
 import { ServiceType, Location } from "@/types";
 
 interface NewPickupFormProps {
@@ -32,9 +33,9 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
     date: new Date().toISOString().split('T')[0],
     time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
     notes: "",
-    formula: isPremium ? "detailed" as ServiceType : "basic" as ServiceType,
+    formula: isPremium ? null : ("basic" as ServiceType),
     options: {
-      hasIroning: isPremium || false,
+      hasIroning: false,
       hasExpress: false,
     }
   });
@@ -148,7 +149,7 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
     });
   };
 
-  const handleFormulaChange = (formula: ServiceType) => {
+  const handleFormulaChange = (formula: ServiceType | null) => {
     setFormData({
       ...formData,
       formula
@@ -169,7 +170,10 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
     // Base price calculation
     let basePrice = 0;
     
-    if (formData.formula === "basic") {
+    if (!formData.formula) {
+      // No formula selected (premium user)
+      basePrice = 0;
+    } else if (formData.formula === "basic") {
       // For basic formula, standard price
       basePrice = 1000;
     } else {
@@ -215,6 +219,16 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
       return;
     }
 
+    // Check if non-premium user has selected a formula
+    if (!isPremium && !formData.formula) {
+      toast({
+        title: "Formule requise",
+        description: "Veuillez sélectionner une formule pour continuer.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Simuler un appel API
@@ -245,6 +259,15 @@ const NewPickupForm = ({ isPremium, isStudent, defaultLocation, onSuccess }: New
             onDefaultLocationChange={handleDefaultLocationChange}
             onLocationStatusChange={setHasLocation}
           />
+
+          {/* Display map with current location */}
+          <div className="mt-2">
+            <Label className="mb-2 block font-medium">Votre position</Label>
+            <LocationMap 
+              latitude={formData.location.latitude} 
+              longitude={formData.location.longitude} 
+            />
+          </div>
 
           <DateTimeSection 
             date={formData.date}
