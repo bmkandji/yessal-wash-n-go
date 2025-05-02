@@ -9,23 +9,23 @@ import FormulasSection from "./FormulasSection";
 import OptionsSection from "./OptionsSection";
 import PriceSection from "./PriceSection";
 import NotesSection from "./NotesSection";
-import LocationMap from "./LocationMap";
+import WeightSection from "./WeightSection";
 import { ServiceType, Location } from "@/types";
+
 interface NewPickupFormProps {
   isPremium: boolean;
   isStudent: boolean;
   defaultLocation?: Location | null;
   onSuccess: () => void;
 }
+
 const NewPickupForm = ({
   isPremium,
   isStudent,
   defaultLocation,
   onSuccess
 }: NewPickupFormProps) => {
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     address: defaultLocation?.address || "",
@@ -40,15 +40,43 @@ const NewPickupForm = ({
       minute: '2-digit'
     }),
     notes: "",
-    formula: isPremium ? null : "basic" as ServiceType,
+    weight: 6, // Default weight
+    formula: null as ServiceType | null,
     options: {
       hasIroning: false,
-      hasExpress: false
+      hasExpress: false,
+      hasDrying: false
     }
   });
 
+  // Monthly used weight for premium users (mock data)
+  const [monthlyUsedWeight, setMonthlyUsedWeight] = useState(25); // Example value
+
   // Location methods
   const [hasLocation, setHasLocation] = useState(Boolean(formData.location.latitude && formData.location.longitude));
+
+  // Effect to initialize formula based on premium status and weight
+  useEffect(() => {
+    if (!isPremium) {
+      setFormData(prev => ({
+        ...prev,
+        formula: "basic"
+      }));
+    } else {
+      const remainingWeight = 40 - monthlyUsedWeight;
+      if (formData.weight > remainingWeight) {
+        setFormData(prev => ({
+          ...prev,
+          formula: "basic"
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          formula: null
+        }));
+      }
+    }
+  }, [isPremium, formData.weight, monthlyUsedWeight]);
 
   // Effect to automatically check ironing option when detailed formula is selected
   useEffect(() => {
@@ -145,6 +173,12 @@ const NewPickupForm = ({
       notes
     });
   };
+  const handleWeightChange = (weight: number) => {
+    setFormData({
+      ...formData,
+      weight
+    });
+  };
   const handleFormulaChange = (formula: ServiceType | null) => {
     setFormData({
       ...formData,
@@ -160,38 +194,91 @@ const NewPickupForm = ({
       }
     });
   };
+  const calculateMachines = (weight: number) => {
+    // Constants
+    const machine20kgPrice = 4000;
+    const machine6kgPrice = 2000;
+    
+    // 1. Calculate number of 20kg machines needed
+    const machineCount20kg = Math.floor(weight / 20);
+    
+    // 2. Calculate remaining weight
+    const remainingWeight = weight % 20;
+    
+    // 3, 4, 5. Determine additional machines needed
+    let additionalMachine20kg = 0;
+    let additionalMachine6kg = 0;
+    
+    if (remainingWeight > 12) {
+      // If remaining weight > 12kg, use one more 20kg machine
+      additionalMachine20kg = 1;
+    } else if (remainingWeight > 7) {
+      // If 7kg < remaining weight <= 12kg, use one more 20kg machine and one 6kg machine
+      additionalMachine20kg = 1;
+      additionalMachine6kg = 1;
+    } else if (remainingWeight > 0) {
+      // Otherwise use one more 20kg machine and one 6kg machine
+      additionalMachine20kg = 1;
+      additionalMachine6kg = 1;
+    }
+    
+    const totalMachine20kg = machineCount20kg + additionalMachine20kg;
+    const totalMachine6kg = additionalMachine6kg;
+    
+    const totalMachine20kgPrice = totalMachine20kg * machine20kgPrice;
+    const totalMachine6kgPrice = totalMachine6kg * machine6kgPrice;
+    
+    return {
+      machine20kg: totalMachine20kg,
+      machine6kg: totalMachine6kg,
+      totalPrice: totalMachine20kgPrice + totalMachine6kgPrice
+    };
+  };
   const calculatePrice = () => {
+    const remainingPremiumWeight = 40 - monthlyUsedWeight;
+    const isPremiumWithinLimit = isPremium && formData.weight <= remainingPremiumWeight;
+    const effectiveWeight = isPremiumWithinLimit ? 0 : formData.weight;
+    const excessWeight = isPremium && formData.weight > remainingPremiumWeight ? formData.weight - remainingPremiumWeight : 0;
+
     // Base price calculation
     let basePrice = 0;
-    if (!formData.formula) {
-      // No formula selected (premium user)
+    
+    if (!formData.formula && isPremiumWithinLimit) {
+      // Premium user within limit
       basePrice = 0;
     } else if (formData.formula === "basic") {
-      // For basic formula, standard price
-      basePrice = 1000;
-    } else {
+      // For basic formula, calculate machine combination
+      const machineCalculation = calculateMachines(isPremium ? excessWeight : formData.weight);
+      basePrice = machineCalculation.totalPrice;
+    } else if (formData.formula === "detailed") {
       // For detailed formula (per kg), minimum 6kg at 600F/kg
-      basePrice = 6 * 600; // 3600 CFA
+      const weightToCharge = isPremium ? excessWeight : formData.weight;
+      basePrice = Math.max(6, weightToCharge) * 600; // 600 CFA/kg
     }
 
     // Additional options
     const ironingPrice = formData.options.hasIroning && formData.formula === "basic" ? 500 : 0;
     const expressPrice = formData.options.hasExpress ? 1000 : 0;
+    const dryingPrice = formData.options.hasDrying ? Math.round(175 * formData.weight) : 0;
 
     // Calculate subtotal
-    const subtotal = basePrice + ironingPrice + expressPrice;
+    const subtotal = basePrice + ironingPrice + expressPrice + dryingPrice;
 
     // Student discount (10%)
     const hasStudentDiscount = isStudent;
     const discountAmount = hasStudentDiscount ? Math.round(subtotal * 0.1) : 0;
+    
     return {
       basePrice,
       ironingPrice,
       expressPrice,
+      dryingPrice,
+      excessWeight,
       subtotal,
       discountAmount,
       hasStudentDiscount,
-      totalPrice: subtotal - discountAmount
+      totalPrice: subtotal - discountAmount,
+      isPremiumFree: isPremiumWithinLimit && !formData.options.hasExpress
     };
   };
   const priceDetails = calculatePrice();
@@ -230,39 +317,82 @@ const NewPickupForm = ({
       onSuccess();
     }, 1500);
   };
-  return <Card>
+  return (
+    <Card>
       <CardContent className="pt-4">
         <form onSubmit={handleSubmit} className="space-y-4">
-          <LocationSection address={formData.address} location={{
-          latitude: formData.location.latitude,
-          longitude: formData.location.longitude,
-          useAsDefault: formData.location.useAsDefault
-        }} hasLocation={hasLocation} onLocationChange={handleLocationChange} onAddressChange={handleAddressChange} onDefaultLocationChange={handleDefaultLocationChange} onLocationStatusChange={setHasLocation} />
+          <LocationSection 
+            address={formData.address} 
+            location={{
+              latitude: formData.location.latitude,
+              longitude: formData.location.longitude,
+              useAsDefault: formData.location.useAsDefault
+            }} 
+            hasLocation={hasLocation} 
+            onLocationChange={handleLocationChange} 
+            onAddressChange={handleAddressChange} 
+            onDefaultLocationChange={handleDefaultLocationChange} 
+            onLocationStatusChange={setHasLocation} 
+          />
 
-          {/* Display map with current location */}
+          <DateTimeSection 
+            date={formData.date} 
+            time={formData.time} 
+            onDateChange={handleDateChange} 
+            onTimeChange={handleTimeChange} 
+          />
+
+          <NotesSection 
+            notes={formData.notes} 
+            onNotesChange={handleNotesChange} 
+          />
           
+          <WeightSection 
+            weight={formData.weight}
+            onWeightChange={handleWeightChange}
+          />
 
-          <DateTimeSection date={formData.date} time={formData.time} onDateChange={handleDateChange} onTimeChange={handleTimeChange} />
-
-          <NotesSection notes={formData.notes} onNotesChange={handleNotesChange} />
+          {/* Only show formulas if not premium or premium but exceeding weight limit */}
+          {(!isPremium || (isPremium && formData.weight > (40 - monthlyUsedWeight))) && (
+            <FormulasSection 
+              formula={formData.formula} 
+              isPremium={isPremium} 
+              onFormulaChange={handleFormulaChange} 
+            />
+          )}
           
-          <FormulasSection formula={formData.formula} isPremium={isPremium} onFormulaChange={handleFormulaChange} />
-          
-          <OptionsSection options={formData.options} formula={formData.formula} onOptionChange={handleOptionChange} />
+          <OptionsSection 
+            options={formData.options} 
+            formula={formData.formula} 
+            weight={formData.weight}
+            isPremium={isPremium}
+            monthlyUsedWeight={monthlyUsedWeight}
+            onOptionChange={handleOptionChange} 
+          />
 
-          <PriceSection priceDetails={priceDetails} formula={formData.formula} options={formData.options} isStudent={isStudent} />
+          <PriceSection 
+            priceDetails={priceDetails} 
+            formula={formData.formula} 
+            options={formData.options} 
+            isStudent={isStudent}
+            weight={formData.weight}
+          />
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? <>
+            {isSubmitting ? (
+              <>
                 <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 Envoi en cours...
-              </> : "Envoyer la demande"}
+              </>
+            ) : "Envoyer la demande"}
           </Button>
         </form>
       </CardContent>
-    </Card>;
+    </Card>
+  );
 };
+
 export default NewPickupForm;

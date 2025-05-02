@@ -35,6 +35,8 @@ export interface PickupRequest {
   serviceType: ServiceType;
   hasIroning: boolean;
   hasExpress: boolean;
+  hasDrying?: boolean;
+  weight?: number;
   status: "pending" | "confirmed" | "on-the-way" | "picked-up" | "processing" | "out-for-delivery" | "delivered" | "cancelled";
   price: number;
   notes?: string;
@@ -48,6 +50,7 @@ export interface Transaction {
   machines: Machine[];
   hasIroning: boolean;
   hasDelivery: boolean;
+  hasDrying?: boolean;
   discounts: Discount[];
   totalPrice: number;
   location: string;

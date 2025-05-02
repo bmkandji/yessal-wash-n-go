@@ -1,23 +1,34 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "@/components/NavBar";
 import TransactionCard from "@/components/TransactionCard";
 import PageHeader from "@/components/PageHeader";
-import { mockTransactions } from "@/lib/mockData";
+import { mockTransactions, mockPickupRequests } from "@/lib/mockData";
+import PickupRequestCard from "@/components/PickupRequestCard";
 
 const History = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<"all" | "completed" | "pending">("all");
+  const [filter, setFilter] = useState<"all" | "completed" | "pending" | "active-pickups">("all");
   
   // Filter transactions based on the selected filter
   const filteredTransactions = mockTransactions.filter(transaction => {
     if (filter === "all") return true;
+    if (filter === "active-pickups") return false;
     return transaction.status === filter;
   });
+
+  // Filter active pickup requests
+  const activePickupRequests = mockPickupRequests.filter(request => 
+    !["delivered", "cancelled"].includes(request.status)
+  );
   
   const handleViewTransaction = (id: string) => {
     navigate(`/transaction/${id}`);
+  };
+
+  const handleViewPickupRequest = (id: string) => {
+    navigate(`/pickup/${id}`);
   };
 
   return (
@@ -32,26 +43,45 @@ const History = () => {
           <FilterButton active={filter === "completed"} onClick={() => setFilter("completed")}>
             Complétés
           </FilterButton>
-          <FilterButton active={filter === "pending"} onClick={() => setFilter("pending")}>
+          <FilterButton active={filter === "active-pickups"} onClick={() => setFilter("active-pickups")}>
             En cours
           </FilterButton>
         </div>
         
-        {filteredTransactions.length === 0 ? (
-          <div className="text-center p-8">
-            <p className="text-lg font-medium">Aucune transaction trouvée</p>
-            <p className="text-muted-foreground">Vous n'avez pas encore de transactions {filter !== "all" ? "avec ce statut" : ""}</p>
-          </div>
+        {filter === "active-pickups" ? (
+          activePickupRequests.length === 0 ? (
+            <div className="text-center p-8">
+              <p className="text-lg font-medium">Aucune collecte active trouvée</p>
+              <p className="text-muted-foreground">Vous n'avez pas encore de collecte en cours</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {activePickupRequests.map((request) => (
+                <PickupRequestCard 
+                  key={request.id}
+                  request={request}
+                  onSelect={handleViewPickupRequest}
+                />
+              ))}
+            </div>
+          )
         ) : (
-          <div className="space-y-4">
-            {filteredTransactions.map((transaction) => (
-              <TransactionCard 
-                key={transaction.id}
-                transaction={transaction}
-                onClick={() => handleViewTransaction(transaction.id)}
-              />
-            ))}
-          </div>
+          filteredTransactions.length === 0 ? (
+            <div className="text-center p-8">
+              <p className="text-lg font-medium">Aucune transaction trouvée</p>
+              <p className="text-muted-foreground">Vous n'avez pas encore de transactions {filter !== "all" ? "avec ce statut" : ""}</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredTransactions.map((transaction) => (
+                <TransactionCard 
+                  key={transaction.id}
+                  transaction={transaction}
+                  onClick={() => handleViewTransaction(transaction.id)}
+                />
+              ))}
+            </div>
+          )
         )}
       </div>
       <NavBar />

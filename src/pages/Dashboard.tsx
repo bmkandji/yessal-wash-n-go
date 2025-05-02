@@ -9,11 +9,13 @@ import { mockUser, mockTransactions, mockSites, mockUsers } from "@/lib/mockData
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User } from "@/types";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("loyalty");
   const isMobile = useIsMobile();
-  const [currentUser, setCurrentUser] = useState<User>(mockUser as User);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  
   useEffect(() => {
     // Check if we have a user email in localStorage
     const userEmail = localStorage.getItem('userEmail');
@@ -21,15 +23,25 @@ const Dashboard = () => {
     // If we have a user email, try to find the user in mockUsers
     if (userEmail && mockUsers[userEmail]) {
       setCurrentUser(mockUsers[userEmail] as User);
+    } else {
+      // Otherwise use the default mockUser
+      setCurrentUser(mockUser as User);
     }
   }, []);
+
   const handleViewTransaction = (id: string) => {
     navigate(`/transaction/${id}`);
   };
 
   // Filter only the two closest sites
   const closestSites = mockSites.slice(0, 2);
-  return <div className="pb-20 max-w-md mx-auto w-full">
+
+  if (!currentUser) {
+    return <div className="p-4 text-center">Chargement...</div>;
+  }
+  
+  return (
+    <div className="pb-20 max-w-md mx-auto w-full">
       {/* Header */}
       <div className="bg-gradient-to-r from-yessal-green to-yessal-blue p-4 pt-8 text-white">
         <div className="flex justify-between items-center mb-4">
@@ -56,7 +68,8 @@ const Dashboard = () => {
           
           <TabsContent value="sites" className="mt-0">
             <div className="space-y-4">
-              {closestSites.map(site => <Card key={site.id}>
+              {closestSites.map(site => (
+                <Card key={site.id}>
                   <CardContent className="p-4">
                     <h3 className="font-medium">{site.name}</h3>
                     <div className="text-sm space-y-1">
@@ -82,7 +95,8 @@ const Dashboard = () => {
                       </p>
                     </div>
                   </CardContent>
-                </Card>)}
+                </Card>
+              ))}
               
               <Button variant="outline" className="w-full" onClick={() => navigate('/website?section=sites')}>
                 Voir tous les sites disponibles
@@ -128,7 +142,7 @@ const Dashboard = () => {
                           <span className="font-medium">4000 F CFA</span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-base font-normal">Séche-linge 13 kg (/20 min)</span>
+                          <span className="text-base font-normal">Séche-linge 13 kg (/20 min)</span>
                           <span className="font-medium">1000 F CFA</span>
                         </div>
                         <div className="flex justify-between">
@@ -186,6 +200,8 @@ Minimum 6 kg par lavage</p>
       </div>
       
       <NavBar />
-    </div>;
+    </div>
+  );
 };
+
 export default Dashboard;
