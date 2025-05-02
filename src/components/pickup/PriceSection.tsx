@@ -52,10 +52,10 @@ const PriceSection = ({ priceDetails, formula, options, isStudent, weight = 0 }:
               </div>
             )}
 
-            {options.hasIroning && formula === "basic" && (
+            {options.hasIroning && options.hasDrying && formula === "basic" && (
               <div className="flex justify-between mb-1">
                 <span>Option repassage</span>
-                <span>500 CFA</span>
+                <span>{priceDetails.ironingPrice} CFA ({weight}kg à 250 CFA/kg)</span>
               </div>
             )}
 

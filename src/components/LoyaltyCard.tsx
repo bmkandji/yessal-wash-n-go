@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,11 @@ import QRCode from "@/components/QRCode";
 import { mockUser } from "@/lib/mockData";
 
 const LoyaltyCard = ({ user = mockUser }) => {
-  const loyaltyProgress = (user.loyaltyPoints % 10) * 10; // Percentage progress for next reward
-  const nextRewardAt = 10 - (user.loyaltyPoints % 10);
-  const hasRewardAvailable = user.loyaltyPoints % 10 === 0 && user.loyaltyPoints > 0;
+  // Calculate loyalty points based on total washes modulo 10
+  const loyaltyPoints = user.totalWashes % 10;
+  const loyaltyProgress = loyaltyPoints * 10; // Percentage progress for next reward
+  const nextRewardAt = 10 - loyaltyPoints;
+  const hasRewardAvailable = loyaltyPoints === 0 && user.totalWashes > 0;
   
   // Determine user status based on subscription and student status
   const isPremium = user.subscription === 'premium';
@@ -25,7 +28,7 @@ const LoyaltyCard = ({ user = mockUser }) => {
     userStatus = 'Sans abonnement';
   }
   
-  // Monthly washed kg
+  // Monthly washed kg - this value is now important for premium calculations
   const monthlyWashedKg = user.monthlyWashedKg || 0;
 
   const handleDownloadCard = () => {
@@ -141,7 +144,7 @@ const LoyaltyCard = ({ user = mockUser }) => {
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Points actuels</p>
-            <p className="text-2xl font-bold">{user.loyaltyPoints}</p>
+            <p className="text-2xl font-bold">{loyaltyPoints}</p>
           </div>
         </div>
         
@@ -160,7 +163,7 @@ const LoyaltyCard = ({ user = mockUser }) => {
           <div className="space-y-2 mb-4">
             <div className="flex justify-between text-sm">
               <span>Progression récompense</span>
-              <span className="font-medium">{user.loyaltyPoints % 10}/10</span>
+              <span className="font-medium">{loyaltyPoints}/10</span>
             </div>
             <Progress value={loyaltyProgress} className="h-2" />
             <p className="text-sm text-muted-foreground">

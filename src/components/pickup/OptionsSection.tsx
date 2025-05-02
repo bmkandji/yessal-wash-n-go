@@ -2,6 +2,7 @@
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ServiceType } from "@/types";
+import { Weight } from "lucide-react";
 
 interface PickupOptions {
   hasIroning: boolean;
@@ -34,7 +35,8 @@ const OptionsSection = ({
     <div className="border rounded-lg p-3">
       <Label className="mb-2 block font-medium">Options supplémentaires</Label>
       <div className="space-y-3">
-        {showRegularOptions && formula === "basic" && (
+        {/* Only show ironing option for basic formula when drying is selected */}
+        {showRegularOptions && formula === "basic" && options.hasDrying && (
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="hasIroning" 
@@ -47,12 +49,13 @@ const OptionsSection = ({
               <Label htmlFor="hasIroning">
                 Option repassage
               </Label>
-              <span className="text-sm font-medium">+500 CFA</span>
+              <span className="text-sm font-medium">+{250 * weight} CFA ({weight}kg à 250 CFA/kg)</span>
             </div>
           </div>
         )}
 
-        {showRegularOptions && (
+        {/* Only show drying option for basic formula or when outside premium limits */}
+        {showRegularOptions && formula === "basic" && (
           <div className="flex items-center space-x-2">
             <Checkbox 
               id="hasDrying" 
@@ -68,6 +71,7 @@ const OptionsSection = ({
           </div>
         )}
 
+        {/* Express option is always available */}
         <div className="flex items-center space-x-2">
           <Checkbox 
             id="hasExpress" 

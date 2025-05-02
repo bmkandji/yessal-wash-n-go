@@ -209,7 +209,7 @@ const NewPickupForm = ({
     let totalMachine6kg = 0;
     let totalPrice = 0;
     
-    // 3, 4, 5, 6. Process remaining weight according to the algorithm
+    // Process remaining weight according to the updated algorithm
     if (remainingWeight > 12) {
       // If remaining weight > 12kg, use one more 20kg machine
       totalMachine20kg += 1;
@@ -218,16 +218,16 @@ const NewPickupForm = ({
     else if (remainingWeight > 7) {
       // If 7 < remaining weight <= 12kg, use n machines of 20kg + 2 machines of 6kg
       totalMachine6kg = 2;
-      totalPrice = totalMachine20kg * machine20kgPrice + totalMachine6kg * machine6kgPrice;
+      totalPrice = machineCount20kg * machine20kgPrice + totalMachine6kg * machine6kgPrice;
     }
     else if (remainingWeight > 2) {
       // If 2 < remaining weight <= 7kg, use n machines of 20kg + 1 machine of 6kg
       totalMachine6kg = 1;
-      totalPrice = totalMachine20kg * machine20kgPrice + totalMachine6kg * machine6kgPrice;
+      totalPrice = machineCount20kg * machine20kgPrice + totalMachine6kg * machine6kgPrice;
     }
     else if (remainingWeight <= 2) {
       // If remaining weight <= 2kg, use only n machines of 20kg
-      totalPrice = totalMachine20kg * machine20kgPrice;
+      totalPrice = machineCount20kg * machine20kgPrice;
     }
     
     return {
@@ -258,8 +258,11 @@ const NewPickupForm = ({
       basePrice = Math.max(6, weightToCharge) * 600; // 600 CFA/kg
     }
 
-    // Additional options
-    const ironingPrice = formData.options.hasIroning && formData.formula === "basic" ? 500 : 0;
+    // Updated ironing price calculation - only applies when drying is selected and for basic formula
+    const ironingPrice = (formData.options.hasIroning && formData.options.hasDrying && formData.formula === "basic") 
+      ? Math.round(250 * formData.weight) 
+      : 0;
+      
     const expressPrice = formData.options.hasExpress ? 1000 : 0;
     const dryingPrice = formData.options.hasDrying ? Math.round(175 * formData.weight) : 0;
 

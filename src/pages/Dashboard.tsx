@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import NavBar from "@/components/NavBar";
 import LoyaltyCard from "@/components/LoyaltyCard";
 import { mockUser, mockTransactions, mockSites, mockUsers } from "@/lib/mockData";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { User } from "@/types";
+import { User, UserSubscription } from "@/types";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 const Dashboard = () => {
