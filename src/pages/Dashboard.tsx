@@ -146,7 +146,8 @@ const Dashboard = () => {
                     <CardContent className="p-4">
                       <h4 className="font-medium text-primary">Formule abonnement</h4>
                       <div className="space-y-2 mt-2">
-                        <p className="text-base">15 000 F/mois pour 40 kg max cumulés par mois</p>
+                        <p className="text-base">15 000 F/mois pour 40 kg max cumulés par mois
+Minimum 6 kg par lavage</p>
                         <p className="font-medium">Inclus :</p>
                         <ul className="text-sm list-disc ml-4 space-y-1">
                           <li>Lavage</li>
