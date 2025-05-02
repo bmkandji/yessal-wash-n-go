@@ -9,13 +9,12 @@ import PickupRequestCard from "@/components/PickupRequestCard";
 
 const History = () => {
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<"all" | "completed" | "pending" | "active-pickups">("all");
+  const [filter, setFilter] = useState<"completed" | "active-pickups">("completed");
   
   // Filter transactions based on the selected filter
   const filteredTransactions = mockTransactions.filter(transaction => {
-    if (filter === "all") return true;
     if (filter === "active-pickups") return false;
-    return transaction.status === filter;
+    return transaction.status === "completed";
   });
 
   // Filter active pickup requests
@@ -36,10 +35,7 @@ const History = () => {
       <div className="p-4">
         <PageHeader title="Historique des lavages" />
         
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          <FilterButton active={filter === "all"} onClick={() => setFilter("all")}>
-            Tous
-          </FilterButton>
+        <div className="grid grid-cols-2 gap-2 mb-4">
           <FilterButton active={filter === "completed"} onClick={() => setFilter("completed")}>
             Complétés
           </FilterButton>
@@ -69,7 +65,7 @@ const History = () => {
           filteredTransactions.length === 0 ? (
             <div className="text-center p-8">
               <p className="text-lg font-medium">Aucune transaction trouvée</p>
-              <p className="text-muted-foreground">Vous n'avez pas encore de transactions {filter !== "all" ? "avec ce statut" : ""}</p>
+              <p className="text-muted-foreground">Vous n'avez pas encore de transactions complétées</p>
             </div>
           ) : (
             <div className="space-y-4">

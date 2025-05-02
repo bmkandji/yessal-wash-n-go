@@ -199,39 +199,41 @@ const NewPickupForm = ({
     const machine20kgPrice = 4000;
     const machine6kgPrice = 2000;
     
-    // 1. Calculate number of 20kg machines needed
+    // 1. Calculate number of 20kg machines needed (integer division)
     const machineCount20kg = Math.floor(weight / 20);
     
     // 2. Calculate remaining weight
     const remainingWeight = weight % 20;
     
-    // 3, 4, 5. Determine additional machines needed
-    let additionalMachine20kg = 0;
-    let additionalMachine6kg = 0;
+    let totalMachine20kg = machineCount20kg;
+    let totalMachine6kg = 0;
+    let totalPrice = 0;
     
+    // 3, 4, 5, 6. Process remaining weight according to the algorithm
     if (remainingWeight > 12) {
       // If remaining weight > 12kg, use one more 20kg machine
-      additionalMachine20kg = 1;
-    } else if (remainingWeight > 7) {
-      // If 7kg < remaining weight <= 12kg, use one more 20kg machine and one 6kg machine
-      additionalMachine20kg = 1;
-      additionalMachine6kg = 1;
-    } else if (remainingWeight > 0) {
-      // Otherwise use one more 20kg machine and one 6kg machine
-      additionalMachine20kg = 1;
-      additionalMachine6kg = 1;
+      totalMachine20kg += 1;
+      totalPrice = totalMachine20kg * machine20kgPrice;
+    } 
+    else if (remainingWeight > 7) {
+      // If 7 < remaining weight <= 12kg, use n machines of 20kg + 2 machines of 6kg
+      totalMachine6kg = 2;
+      totalPrice = totalMachine20kg * machine20kgPrice + totalMachine6kg * machine6kgPrice;
     }
-    
-    const totalMachine20kg = machineCount20kg + additionalMachine20kg;
-    const totalMachine6kg = additionalMachine6kg;
-    
-    const totalMachine20kgPrice = totalMachine20kg * machine20kgPrice;
-    const totalMachine6kgPrice = totalMachine6kg * machine6kgPrice;
+    else if (remainingWeight > 2) {
+      // If 2 < remaining weight <= 7kg, use n machines of 20kg + 1 machine of 6kg
+      totalMachine6kg = 1;
+      totalPrice = totalMachine20kg * machine20kgPrice + totalMachine6kg * machine6kgPrice;
+    }
+    else if (remainingWeight <= 2) {
+      // If remaining weight <= 2kg, use only n machines of 20kg
+      totalPrice = totalMachine20kg * machine20kgPrice;
+    }
     
     return {
       machine20kg: totalMachine20kg,
       machine6kg: totalMachine6kg,
-      totalPrice: totalMachine20kgPrice + totalMachine6kgPrice
+      totalPrice: totalPrice
     };
   };
   const calculatePrice = () => {

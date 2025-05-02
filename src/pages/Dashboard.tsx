@@ -22,10 +22,10 @@ const Dashboard = () => {
 
     // If we have a user email, try to find the user in mockUsers
     if (userEmail && mockUsers[userEmail]) {
-      setCurrentUser(mockUsers[userEmail] as User);
+      setCurrentUser(mockUsers[userEmail]);
     } else {
       // Otherwise use the default mockUser
-      setCurrentUser(mockUser as User);
+      setCurrentUser(mockUser);
     }
   }, []);
 

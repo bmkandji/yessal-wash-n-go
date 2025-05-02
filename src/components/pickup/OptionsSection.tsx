@@ -27,7 +27,7 @@ const OptionsSection = ({
   onOptionChange
 }: OptionsSectionProps) => {
   const remainingPremiumWeight = 40 - monthlyUsedWeight;
-  const showPremiumOptions = isPremium && weight <= remainingPremiumWeight;
+  const isPremiumWithinLimit = isPremium && weight <= remainingPremiumWeight;
   const showRegularOptions = !isPremium || (isPremium && weight > remainingPremiumWeight);
   
   return (
@@ -45,7 +45,7 @@ const OptionsSection = ({
             />
             <div className="flex justify-between items-center w-full">
               <Label htmlFor="hasIroning">
-                Option repassage (kg)
+                Option repassage
               </Label>
               <span className="text-sm font-medium">+500 CFA</span>
             </div>

@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Location } from "@/types";
 import { MapPin } from "lucide-react";
 import LocationConfirmDialog from "./LocationConfirmDialog";
+import LocationMap from "./LocationMap";
 
 interface LocationSectionProps {
   address: string;
@@ -102,6 +103,12 @@ const LocationSection = ({
               </span>
               <span className="text-xs text-blue-600 ml-auto">Modifier</span>
             </div>
+            
+            {/* Map showing the current location */}
+            <LocationMap 
+              latitude={location.latitude} 
+              longitude={location.longitude} 
+            />
             
             <div className="flex items-center space-x-2 mt-2">
               <Checkbox 
