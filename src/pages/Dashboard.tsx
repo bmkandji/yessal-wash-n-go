@@ -8,39 +8,28 @@ import LoyaltyCard from "@/components/LoyaltyCard";
 import { mockUser, mockTransactions, mockSites, mockUsers } from "@/lib/mockData";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { User } from "@/types";
-import { 
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
-
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("loyalty");
   const isMobile = useIsMobile();
   const [currentUser, setCurrentUser] = useState<User>(mockUser as User);
-  
   useEffect(() => {
     // Check if we have a user email in localStorage
     const userEmail = localStorage.getItem('userEmail');
-    
+
     // If we have a user email, try to find the user in mockUsers
     if (userEmail && mockUsers[userEmail]) {
       setCurrentUser(mockUsers[userEmail] as User);
     }
   }, []);
-  
   const handleViewTransaction = (id: string) => {
     navigate(`/transaction/${id}`);
   };
-  
+
   // Filter only the two closest sites
   const closestSites = mockSites.slice(0, 2);
-
-  return (
-    <div className="pb-20 max-w-md mx-auto w-full">
+  return <div className="pb-20 max-w-md mx-auto w-full">
       {/* Header */}
       <div className="bg-gradient-to-r from-yessal-green to-yessal-blue p-4 pt-8 text-white">
         <div className="flex justify-between items-center mb-4">
@@ -53,11 +42,7 @@ const Dashboard = () => {
       
       {/* Content */}
       <div className="px-4 py-4">
-        <Tabs 
-          value={activeTab} 
-          onValueChange={setActiveTab}
-          className="w-full"
-        >
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 mb-4 w-full">
             <TabsTrigger value="loyalty">Fidélité</TabsTrigger>
             <TabsTrigger value="sites">Nos sites</TabsTrigger>
@@ -71,41 +56,35 @@ const Dashboard = () => {
           
           <TabsContent value="sites" className="mt-0">
             <div className="space-y-4">
-              {closestSites.map((site) => (
-                <Card key={site.id}>
+              {closestSites.map(site => <Card key={site.id}>
                   <CardContent className="p-4">
                     <h3 className="font-medium">{site.name}</h3>
                     <div className="text-sm space-y-1">
                       <p className="text-muted-foreground">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block mr-1 -mt-0.5">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                          <circle cx="12" cy="10" r="3"/>
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                          <circle cx="12" cy="10" r="3" />
                         </svg>
                         {site.address}
                       </p>
                       <p className="text-muted-foreground">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block mr-1 -mt-0.5">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                         </svg>
                         {site.phone}
                       </p>
                       <p className="text-muted-foreground">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block mr-1 -mt-0.5">
-                          <circle cx="12" cy="12" r="10"/>
-                          <polyline points="12 6 12 12 16 14"/>
+                          <circle cx="12" cy="12" r="10" />
+                          <polyline points="12 6 12 12 16 14" />
                         </svg>
                         {site.openingHours}
                       </p>
                     </div>
                   </CardContent>
-                </Card>
-              ))}
+                </Card>)}
               
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => navigate('/website?section=sites')}
-              >
+              <Button variant="outline" className="w-full" onClick={() => navigate('/website?section=sites')}>
                 Voir tous les sites disponibles
               </Button>
             </div>
@@ -122,9 +101,9 @@ const Dashboard = () => {
                   <p className="text-sm text-muted-foreground">Demande de collecte à domicile</p>
                 </div>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="m12 8 4 4-4 4"/>
-                  <path d="m8 12h8"/>
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="m12 8 4 4-4 4" />
+                  <path d="m8 12h8" />
                 </svg>
               </div>
             </CardContent>
@@ -141,20 +120,20 @@ const Dashboard = () => {
                       <h4 className="font-medium text-primary">Formules de base</h4>
                       <div className="space-y-2 mt-2">
                         <div className="flex justify-between">
-                          <span>Machine 6 kg</span>
-                          <span className="font-medium">3000 F CFA</span>
+                          <span>Lave-linge 6 kg</span>
+                          <span className="font-medium">2000 F CFA</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Machine 10 kg</span>
-                          <span className="font-medium">5000 F CFA</span>
+                          <span className="font-normal">Lave-linge 20 kg</span>
+                          <span className="font-medium">4000 F CFA</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Machine 14 kg</span>
-                          <span className="font-medium">7000 F CFA</span>
+                          <span className="text-base font-normal">Séche-linge 13 kg (/20 min)</span>
+                          <span className="font-medium">1000 F CFA</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Repassage</span>
-                          <span className="font-medium">+1000 F CFA</span>
+                          <span className="font-normal">Repassage( /kg)</span>
+                          <span className="font-medium">+250 F CFA</span>
                         </div>
                       </div>
                     </CardContent>
@@ -167,7 +146,7 @@ const Dashboard = () => {
                     <CardContent className="p-4">
                       <h4 className="font-medium text-primary">Formule abonnement</h4>
                       <div className="space-y-2 mt-2">
-                        <p className="text-sm">15 000 F/mois pour 40 kg max cumulés par mois</p>
+                        <p className="text-base">15 000 F/mois pour 40 kg max cumulés par mois</p>
                         <p className="font-medium">Inclus :</p>
                         <ul className="text-sm list-disc ml-4 space-y-1">
                           <li>Lavage</li>
@@ -206,8 +185,6 @@ const Dashboard = () => {
       </div>
       
       <NavBar />
-    </div>
-  );
+    </div>;
 };
-
 export default Dashboard;
